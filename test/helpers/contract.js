@@ -191,7 +191,13 @@ export const UMWEGE_CLASSES = [
 // `home-pass__route` is dropped (no route on the redrawn pass).
 export const WITHDRAWN_CLASSES = ['callout', 'duo', 'bw', 'post-nav', 'post-card__reading-time', 'post__reading-time', 'post-thumb__image', 'post-facts__note', 'post-route', 'post-card__cover', 'home-pass__route', 'home-statement', 'home-hero__image', 'post__image-note']
 
-export const PUBLIC_CLASSES = [...SHELL_CLASSES, ...BLOG_CLASSES, ...UMWEGE_CLASSES]
+// Classes of §S4.6 / §S12 whose element Umwege does not render (§S12: a
+// class is kept "wherever the element exists"): cards show no date and no
+// meta line (the reference's cards have none), the hero has no button, and
+// the featured series is not rendered (§S11.3).
+export const NOT_RENDERED = ['post-card__date', 'post-card__meta', 'home-hero__actions', 'home-series']
+
+export const PUBLIC_CLASSES = [...SHELL_CLASSES, ...BLOG_CLASSES, ...UMWEGE_CLASSES].filter((name) => !NOT_RENDERED.includes(name))
 
 // The plugins Umwege styles, with the peer floors (§S11.1).
 export const PLUGIN_CLASSES = {

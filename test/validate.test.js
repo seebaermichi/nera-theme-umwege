@@ -64,9 +64,11 @@ describe('Without plugins', () => {
             // a Markdown image stays a plain <img> in the body; the theme renders none
             expect(html.replace(/<div class="(post|page)__body">[\s\S]*?<\/div>/g, ''), file).not.toMatch(/<img/)
             expect(countTags(html, 'h1'), file).toBe(1)
-            for (const seam of ['post__media', 'post-card__media', 'home-hero__image', 'post__tags', 'post__pagination']) {
+            for (const seam of ['post__media', 'post-card__media', 'post__tags', 'post__pagination']) {
                 for (const [, inner] of html.matchAll(new RegExp(`<div class="${seam}">([\\s\\S]*?)</div>`, 'g'))) {
-                    expect(inner.trim(), `${file} ${seam}`).toBe('')
+                    // a card's media keeps only its location chip (§S11.4)
+                    const rest = seam === 'post-card__media' ? inner.replace(/<span class="post-card__location">[\s\S]*?<\/span>/, '') : inner
+                    expect(rest.trim(), `${file} ${seam}`).toBe('')
                 }
             }
         }

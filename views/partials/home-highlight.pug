@@ -1,15 +1,12 @@
-//- The highlight strip on the home (§S11.3, `blog.highlight_tag`): the
-//- pictures of the newest six posts whose frontmatter `tags` contain the
-//- tag, as a contact sheet; the heading is the tag itself. Each frame links
-//- its post (the title is the link's text, hidden behind the picture). Not
-//- rendered when no post has the tag.
+//- The highlight list on the home (§S11.3, `blog.highlight_tag`): the
+//- titles of the newest four posts whose frontmatter `tags` contain the
+//- tag, on a coral band; the heading is the tag itself. No link to the tag
+//- page (its URL is plugin data). Not rendered when no post has the tag.
 if themeUmwege.highlightPosts(pageLang({ meta })).length
     section.home-highlight
-        h2= themeUmwege.highlightTag()
-        ol
-            each item in themeUmwege.highlightPosts(pageLang({ meta }))
-                li
-                    a(href=item.meta.href)
-                        if item.meta.image
-                            include card-media.pug
-                        span= item.meta.title
+        div
+            h2= themeUmwege.highlightTag()
+            ul
+                each item in themeUmwege.highlightPosts(pageLang({ meta }))
+                    li
+                        a(href=item.meta.href)= item.meta.title

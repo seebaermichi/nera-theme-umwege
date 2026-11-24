@@ -1,16 +1,50 @@
-//- The front page (ROADMAP-themes §S11.7, Ansitz): the newest post with a
-//- picture as the hero (the hero-media seam behind its title, description,
-//- a link t('Read more'), location and image_note), the page body as the
-//- statement, the next `blog.home_posts` posts as a wall of cards, the
-//- highlight strip, the featured series and the about block. Without a post
-//- with a picture, the page's own title is the <h1>.
+//- The front page (ROADMAP-themes §S11.7, Umwege): the hero on the petrol
+//- band (title and lead left, the pictures of the three newest posts with a
+//- picture as tilted prints right, captioned with their `location`); the
+//- newest post as the boarding pass that overlaps the hero's lower edge;
+//- the next `blog.home_posts` posts as cards, the first one wide; the
+//- tag-cloud seam as stamps under t('Tags'); the highlight list; the about
+//- block.
 extends ../layouts/layout.pug
 
 block main
-    include ../partials/page-header.pug
-    if String(content || '').trim()
-        .home-statement
-            != content
+    section.home-hero
+        .home-hero__inner
+            div
+                h1.home-hero__title= meta.title || app.name
+                if meta.lead
+                    p.home-hero__lead= meta.lead
+            if themeUmwege.heroPrints(pageLang({ meta })).length
+                .home-hero__aside
+                    each item in themeUmwege.heroPrints(pageLang({ meta }))
+                        a(href=item.meta.href)
+                            include ../partials/card-media.pug
+                            if item.meta.location
+                                span= item.meta.location
+                            else
+                                span= item.meta.title
+    if themeUmwege.passPost(pageLang({ meta }))
+        - const item = themeUmwege.passPost(pageLang({ meta }))
+        section.home-pass(aria-label=t('Latest post'))
+            article
+                div
+                    p
+                        span= t('Latest post')
+                        if isoDate(item.meta.createdAt)
+                            time(datetime=isoDate(item.meta.createdAt))= formatDate(item.meta.createdAt, pageLang(item))
+                    h2
+                        a(href=item.meta.href)= item.meta.title
+                    if themeUmwege.facts(item).length
+                        dl.home-pass__facts
+                            each fact in themeUmwege.facts(item)
+                                div
+                                    dt= fact.label
+                                    dd= fact.value
+                div
+                    if item.meta.image
+                        div
+                            include ../partials/card-media.pug
+                    a.button.button--primary(href=item.meta.href)= t('Read more')
     if themeUmwege.homePosts(pageLang({ meta })).length
         section.post-list
             h2.post-list__title= t('Recent posts')
@@ -21,6 +55,11 @@ block main
                     - const position = index
                     - const featured = index === 0
                     include ../partials/post-card.pug
+    //- No class of its own (§S12 has none): theme.css draws the sand band
+    //- with section:has(> .tag-cloud) and hides the heading when the seam
+    //- renders nothing.
+    section
+        h2= t('Tags')
+        include ../partials/tag-cloud.pug
     include ../partials/home-highlight.pug
-    include ../partials/home-series.pug
     include ../partials/home-about.pug

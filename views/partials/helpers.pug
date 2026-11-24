@@ -80,25 +80,29 @@
                 .sort((a, b) => time(b) - time(a) || byHref(a, b))
         }
 
-        // The home hero: the newest post with a frontmatter `image` (§S11.7),
-        // or null.
-        const heroPost = (lang) => posts(lang).find((page) => page.meta.image) || null
+        // The boarding pass on the home (§S11.7): the newest post, or null.
+        const passPost = (lang) => posts(lang)[0] || null
 
-        // The cards of the home's wall: the newest `blog.home_posts` (default
-        // 7) after the hero's post, which is not repeated there.
+        // The prints in the home hero (§S11.7): the three newest posts with
+        // a frontmatter `image` (decided 2026-11-24: a post without a
+        // picture is skipped, not left as a gap).
+        const heroPrints = (lang) => posts(lang).filter((page) => page.meta.image).slice(0, 3)
+
+        // The cards under the pass: the newest `blog.home_posts` (default 7)
+        // after the pass's post, which is not counted (decided 2026-11-24,
+        // as Ansitz's hero).
         const homePosts = (lang) => {
             const count = Number(blog.home_posts)
-            const hero = heroPost(lang)
-            return posts(lang).filter((page) => page !== hero).slice(0, Number.isInteger(count) && count >= 0 ? count : 7)
+            return posts(lang).slice(1).slice(0, Number.isInteger(count) && count >= 0 ? count : 7)
         }
 
-        // `blog.highlight_tag` (§S11.3), '' when unset, and the newest six
-        // posts whose frontmatter `tags` contain it: the film strip.
+        // `blog.highlight_tag` (§S11.3), '' when unset, and the newest four
+        // posts whose frontmatter `tags` contain it: the coral list.
         const highlightTag = () => (typeof blog.highlight_tag === 'string' ? blog.highlight_tag : '')
         const highlightPosts = (lang) => {
             const tag = highlightTag()
             if (!tag) return []
-            return posts(lang).filter((page) => Array.isArray(page.meta.tags) && page.meta.tags.includes(tag)).slice(0, 6)
+            return posts(lang).filter((page) => Array.isArray(page.meta.tags) && page.meta.tags.includes(tag)).slice(0, 4)
         }
 
         // The posts of a language grouped by year, newest year first. A post
@@ -188,9 +192,6 @@
                 .sort((a, b) => part(a) - part(b) || ((toDate(a.meta.createdAt) || 0) - (toDate(b.meta.createdAt) || 0)))
         }
 
-        // `blog.featured_series` (§S11.3), '' when unset.
-        const featuredSeries = () => (typeof blog.featured_series === 'string' ? blog.featured_series : '')
-
         // The `author` block of config/theme.yaml (§S11.3), resolved
         // for a language: `href` may be a path or a `{ <lang>: path }` map,
         // like `footer_links`.
@@ -217,5 +218,5 @@
             return date ? date.toLocaleDateString(lang, { month: 'short', day: 'numeric', timeZone: 'UTC' }) : ''
         }
 
-        return { dayMonth, toDate, homePage, posts, heroPost, homePosts, highlightTag, highlightPosts, postsByYear, tokenRule, extraCss, footerLinks, languageLinks, seriesParts, featuredSeries, author, initials, facts }
+        return { dayMonth, toDate, homePage, posts, passPost, heroPrints, homePosts, highlightTag, highlightPosts, postsByYear, tokenRule, extraCss, footerLinks, languageLinks, seriesParts, author, initials, facts }
     })()
