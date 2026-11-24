@@ -7,12 +7,17 @@
 // a post shows its tags, its series with the current part marked, its facts
 // and the prev/next of plugin-page-pagination; a post without a picture
 // renders no empty media element.
+import fs from 'fs'
+import path from 'path'
 import { describe, expect, inject, it } from 'vitest'
-import { attr, countTags, elementByClass, page, stripTags, tags } from './helpers/html.js'
+import { ROOT } from './helpers/site.js'
+import { attr, countTags, elementByClass, page, pages, stripTags, tags } from './helpers/html.js'
 
 const builds = inject('builds')
 const pub = builds.default.public
 const sections = (html, className) => html.split(`<section class="${className}"`).slice(1).map((s) => s.split('</section>')[0])
+const datetimes = (html) => tags(html, 'time').map((a) => attr(a, 'datetime'))
+const isDescending = (list) => list.every((value, i) => i === 0 || list[i - 1] >= value)
 const cardHrefs = (html) => tags(html, 'a').filter((a) => /post-card__link/.test(a)).map((a) => attr(a, 'href'))
 
 describe('Starter fit: home', () => {
@@ -219,5 +224,107 @@ describe('Starter fit: post', () => {
     it('links the feed through the feed-link seam', () => {
         expect(html).toMatch(/<link rel="alternate" type="application\/atom\+xml" href="\/feed\.xml"/)
         expect(page(pub, 'de/index.html')).toMatch(/<link rel="alternate" type="application\/atom\+xml" href="\/de\/feed\.xml"/)
+    })
+})
+
+describe('Starter fit: archive, tag page, default page', () => {
+    for (const [lang, archive, word] of [['en', 'archive.html', 'posts'], ['de', 'de/archiv.html', 'Reisen']]) {
+        it(`${lang}: the archive groups the posts by year, newest first, with <n> ${word}`, () => {
+            const html = page(pub, archive)
+            const years = sections(html, 'post-archive__year')
+            const counts = [5, 4, 3, 2]
+            expect(years.map((s) => Number(/<h2>(\d{4})/.exec(s)[1]))).toEqual([2026, 2025, 2024, 2023])
+            years.forEach((section, i) => {
+                const dates = datetimes(section)
+                expect(dates.length).toBe(counts[i])
+                for (const date of dates) expect(date.startsWith(String(2026 - i))).toBe(true)
+                expect(section).toMatch(new RegExp(`<span class="post-archive__count">${counts[i]} ${word}</span>`))
+            })
+            expect(isDescending(datetimes(html))).toBe(true)
+            expect(html).toMatch(/<section class="tag-cloud">/)
+        })
+    }
+
+    it('shows each archive row with its picture, title, location and day and month', () => {
+        const [year] = sections(page(pub, 'archive.html'), 'post-archive__year')
+        const row = year.split('<li class="post-archive__item">')[1]
+        expect(row).toMatch(/^\s*<div>\s*<picture>[\s\S]*alt="A mountain village in the snow/)
+        expect(row).toMatch(/<p><a href="\/posts\/dolomites-without-a-car\.html">Nine days in the Dolomites without a car<\/a><span>Italy<\/span><\/p>/)
+        expect(row).toMatch(/<time datetime="2026-11-12">Nov 12<\/time>/)
+        // a post without a picture gets no empty media element
+        const plain = page(pub, 'archive.html').split('<li class="post-archive__item">').find((item) => item.includes('packing-list'))
+        expect(plain).toMatch(/^\s*<p><a href/)
+    })
+
+    it('renders every generated tag page with exactly one <h1>, through pages/tag.pug', () => {
+        const tagPages = pages(pub).filter(({ file }) => /^(de\/)?tags\//.test(file))
+        expect(tagPages.length).toBe(26)
+        for (const { file, html } of tagPages) {
+            expect(countTags(html, 'h1'), file).toBe(1)
+            expect(html, file).toMatch(/<section class="tag-page">\s*<section class="tag-overview">/)
+        }
+        const italy = page(pub, 'tags/italy.html')
+        expect(italy).toMatch(/<h1 class="tag-overview__title">Italy<\/h1>/)
+        expect(countTags(italy, 'article')).toBe(3)
+        expect(italy).toMatch(/<time class="tag-overview__item-date" datetime="2026-11-12">November 12, 2026<\/time>/)
+        expect(page(pub, 'de/tags/italien.html')).toMatch(/<html lang="de">/)
+    })
+
+    it('without plugin-tags a tag page falls back to the title on the band and the body', () => {
+        const source = fs.readFileSync(path.join(ROOT, 'views', 'partials', 'tag-overview.pug'), 'utf-8')
+        expect(source.split('\n').filter((line) => line.trim() && !line.startsWith('//-'))).toEqual([
+            'header.page__header',
+            '    h1.page__title= meta.title || app.name',
+            '.page__body',
+            '    != content',
+        ])
+    })
+
+    it('renders a default page as header and body, nothing beside them', () => {
+        const html = page(pub, 'about.html')
+        const main = /<main[^>]*>([\s\S]*)<\/main>/.exec(html)[1]
+        expect(main).toMatch(/^\s*<header class="page__header">\s*<h1 class="page__title">Hello, I am Lena\.<\/h1>\s*<p class="page__lead">Bookseller from Freiburg/)
+        expect(main.replace(/<header class="page__header">[\s\S]*?<\/header>/, '')).toMatch(/^\s*<div class="page__body">[\s\S]*<\/div>\s*$/)
+        expect(main).not.toMatch(/<aside/)
+    })
+})
+
+describe('Starter fit: external links open in a new tab', () => {
+    it('opens external links in a new tab (plugin-link-attributes, social links), internal ones not', () => {
+        const html = page(pub, 'about.html')
+        const body = elementByClass(html, 'div', 'page__body')
+        const external = tags(body, 'a').filter((a) => /^https?:/.test(attr(a, 'href')))
+        expect(external.length).toBeGreaterThan(0)
+        for (const a of external) {
+            expect(attr(a, 'target')).toBe('_blank')
+            expect(attr(a, 'rel')).toBe('noopener noreferrer')
+        }
+        for (const a of tags(html, 'a').filter((a) => /^\//.test(attr(a, 'href')))) expect(attr(a, 'target')).toBeUndefined()
+        const footer = elementByClass(html, 'footer', 'site-footer')
+        const social = tags(footer, 'a').filter((a) => /social-media-links__link/.test(a))
+        expect(social.length).toBe(2)
+        for (const a of social) expect(attr(a, 'target')).toBe('_blank')
+        // and nothing opens a new tab without the plugins
+        for (const { file, html: built } of pages(builds.noplugins.public)) expect(built, file).not.toContain('target="_blank"')
+    })
+
+    it('marks every link that opens a new tab with an arrow, in CSS only', () => {
+        const css = fs.readFileSync(path.join(ROOT, 'assets', 'css', 'theme.css'), 'utf-8')
+        expect(css).toMatch(/a\[target='_blank'\]::after\s*\{[^}]*content: '\\00a0\\2197'/)
+    })
+})
+
+describe('Starter fit: the cover on a phone (§S13; measured 350×263 at 390 px)', () => {
+    const css = fs.readFileSync(path.join(ROOT, 'assets', 'css', 'theme.css'), 'utf-8').replace(/\/\*[\s\S]*?\*\//g, '')
+    const phone = css.slice(css.indexOf('@media (max-width: 900px)'))
+    const rule = (text, selector) => [...text.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
+        .filter(([, prelude]) => prelude.split(',').map((x) => x.trim()).includes(selector))
+        .map(([, , body]) => body).join('\n')
+
+    it('sizes the cover by one rule only: the img at 4:3, no height on the media or the picture', () => {
+        expect(rule(phone, '.post__media img')).toMatch(/aspect-ratio: 4 \/ 3/)
+        for (const selector of ['.post__media', '.post__media picture', '.post__media > picture']) {
+            expect(rule(css, selector), selector).not.toMatch(/(^|[^-])height/)
+        }
     })
 })

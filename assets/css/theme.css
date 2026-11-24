@@ -178,7 +178,7 @@ blockquote {
 .post__body,
 .post__footer,
 .post-archive__year,
-.tag-overview > * {
+.tag-overview__content {
     width: 100%;
     max-width: calc(var(--width) + 2 * var(--gutter));
     margin-inline: auto;
@@ -1564,7 +1564,197 @@ a[target='_blank']::after {
     color: var(--coral);
 }
 
-/* @PAGES@ */
+/* ---------- archive: years in petrol numerals, rows on sand ---------- */
+
+.post-archive__year {
+    display: grid;
+    grid-template-columns: 250px minmax(0, 1fr);
+    gap: 40px;
+    padding-top: 56px;
+}
+
+.page__header + .post-archive__year {
+    padding-top: 72px;
+}
+
+.post-archive__year h2 {
+    font-family: var(--font-heading);
+    font-weight: 900;
+    font-size: 84px;
+    line-height: 0.8;
+    letter-spacing: -0.05em;
+    color: var(--accent);
+}
+
+.post-archive__count {
+    display: block;
+    margin-top: 16px;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 14.5px;
+    letter-spacing: 0;
+    color: var(--muted);
+}
+
+.post-archive__list {
+    display: grid;
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.post-archive__item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 112px minmax(0, 1fr) auto;
+    gap: 22px;
+    align-items: center;
+    min-height: 108px;
+    padding: 12px 22px 12px 12px;
+    border-radius: 22px;
+    background: var(--surface);
+}
+
+/* a row without a picture keeps the text in the second column */
+.post-archive__item > p:first-child {
+    grid-column: 2;
+}
+
+.post-archive__item:hover {
+    background: var(--sun);
+}
+
+.post-archive__item img {
+    width: 112px;
+    height: 84px;
+    object-fit: cover;
+    border-radius: 14px;
+}
+
+.post-archive__item a {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 25px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+}
+
+.post-archive__item a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+}
+
+.post-archive__item p span {
+    display: block;
+    margin-top: 4px;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.post-archive__item time {
+    font-weight: 700;
+    font-size: 14px;
+}
+
+/* the tag cloud at the end of the archive: the stamps, without the band */
+.site-main > .tag-cloud {
+    width: 100%;
+    max-width: calc(var(--width) + 2 * var(--gutter));
+    margin: 96px auto 0;
+    padding-inline: var(--gutter);
+}
+
+/* ---------- tag page (plugin-tags' tag overview) ---------- */
+
+.tag-overview__header {
+    padding: 48px max(var(--gutter), calc((100% - var(--width)) / 2)) 72px;
+    background: var(--accent);
+    color: var(--accent-text);
+}
+
+.tag-overview__title {
+    max-width: 1000px;
+    font-family: var(--font-heading);
+    font-weight: 900;
+    font-size: clamp(46px, 7vw, 104px);
+    line-height: 0.92;
+    letter-spacing: -0.04em;
+    font-variation-settings: 'opsz' 144;
+    text-wrap: balance;
+}
+
+.tag-overview__content {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px;
+    margin-top: 72px;
+}
+
+.tag-overview__item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 32px;
+    border-radius: var(--radius);
+    background: var(--surface);
+}
+
+.tag-overview__item:nth-child(4n + 2) {
+    background: var(--sky);
+}
+
+.tag-overview__item:nth-child(4n + 3) {
+    background: var(--blush);
+}
+
+.tag-overview__item-title {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 32px;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+}
+
+.tag-overview__item-date {
+    order: -1;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.tag-overview__item-description {
+    font-size: 17px;
+    color: var(--muted);
+}
+
+.tag-overview__item-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin-top: auto;
+    padding: 0 20px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--accent-text);
+    font-weight: 700;
+    font-size: 15px;
+    text-decoration: none;
+}
+
+.tag-overview__item-link:hover {
+    background: var(--text);
+}
+
+.tag-overview__image {
+    max-width: 100%;
+    margin-top: 24px;
+    border-radius: 22px;
+}
 
 /* ---------- motion: only for those who do not mind it ---------- */
 
@@ -1802,5 +1992,57 @@ a[target='_blank']::after {
         grid-column: 1;
     }
 
-    /* @PHONE@ */
+    .post-archive__year {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 20px;
+        padding-top: 40px;
+    }
+
+    .page__header + .post-archive__year {
+        padding-top: 40px;
+    }
+
+    .post-archive__year h2 {
+        font-size: 72px;
+    }
+
+    .post-archive__item {
+        grid-template-columns: 84px minmax(0, 1fr);
+        gap: 14px;
+        min-height: 90px;
+    }
+
+    .post-archive__item img {
+        width: 84px;
+        height: 66px;
+    }
+
+    .post-archive__item a {
+        font-size: 20px;
+    }
+
+    .post-archive__item time {
+        display: none;
+    }
+
+    .site-main > .tag-cloud {
+        margin-top: 64px;
+    }
+
+    .tag-overview__header {
+        padding-block: 32px 56px;
+    }
+
+    .tag-overview__content {
+        grid-template-columns: minmax(0, 1fr);
+        margin-top: 40px;
+    }
+
+    .tag-overview__item {
+        padding: 24px;
+    }
+
+    .tag-overview__item-title {
+        font-size: 27px;
+    }
 }
