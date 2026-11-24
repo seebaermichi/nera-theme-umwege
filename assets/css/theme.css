@@ -1,1 +1,741 @@
-/* Umwege — placeholder until step 2 */
+/*
+ * @nera-static/theme-umwege — look "Umwege", for people who come home with
+ * stories. A white page, a petrol band for header, hero and footer with
+ * cream text on it, sun yellow and coral as second colours, large radii and
+ * pills; titles in Fraunces 900, text in DM Sans (ROADMAP-themes §S13). No
+ * JavaScript, no third-party request; the webfonts below are served from
+ * this site (§S11.2).
+ */
+
+/* Fonts: SIL Open Font License 1.1, see ../fonts/umwege/OFL-*.txt. From
+   @fontsource-variable/fraunces (weight and optical size) and
+   @fontsource-variable/dm-sans (weight) 5.3.0. */
+@font-face {
+    font-family: 'Fraunces';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 100 900;
+    src: url('../fonts/umwege/fraunces-latin-ext-opsz-normal.woff2') format('woff2');
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+    font-family: 'Fraunces';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 100 900;
+    src: url('../fonts/umwege/fraunces-latin-opsz-normal.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'Fraunces';
+    font-style: italic;
+    font-display: swap;
+    font-weight: 100 900;
+    src: url('../fonts/umwege/fraunces-latin-ext-opsz-italic.woff2') format('woff2');
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+    font-family: 'Fraunces';
+    font-style: italic;
+    font-display: swap;
+    font-weight: 100 900;
+    src: url('../fonts/umwege/fraunces-latin-opsz-italic.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'DM Sans';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 100 1000;
+    src: url('../fonts/umwege/dm-sans-latin-ext-wght-normal.woff2') format('woff2');
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+    font-family: 'DM Sans';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 100 1000;
+    src: url('../fonts/umwege/dm-sans-latin-wght-normal.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Every token read once, with its default (§S11.3), plus the few fixed
+   colours of the look that are not tokens. */
+:root {
+    --bg: var(--theme-color-bg, #ffffff);
+    --surface: var(--theme-color-surface, #f6ead4);
+    --text: var(--theme-color-text, #17231f);
+    --muted: var(--theme-color-muted, #56635e);
+    --accent: var(--theme-color-accent, #0d4b45);
+    --accent-text: var(--theme-color-accent-text, #fff3dc);
+    --border: var(--theme-color-border, #dfe5e1);
+    --focus: var(--theme-color-focus, #b8370f);
+    --sun: var(--theme-color-sun, #ffcf3f);
+    --coral: var(--theme-color-coral, #f4603a);
+    --sky: var(--theme-color-sky, #cfe8f5);
+    --font-body: var(--theme-font-body, 'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif);
+    --font-heading: var(--theme-font-heading, 'Fraunces', Georgia, 'Times New Roman', serif);
+    --font-mono: var(--theme-font-mono, ui-monospace, 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace);
+    --base: var(--theme-size-base, 1.0625rem);
+    --measure: var(--theme-size-measure, 41rem);
+    --width: var(--theme-size-width, 73rem);
+    --radius: var(--theme-size-radius, 1.625rem);
+    --space: var(--theme-size-space, 1.5rem);
+
+    /* cream a step below `accent_text`: leads on the petrol band */
+    --band-soft: #e6dcc6;
+    /* the fourth fact tile and the third tag card */
+    --blush: #ffd9cd;
+    /* the stamps' inks */
+    --ink-red: #b23a1c;
+    --ink-brown: #7a4b00;
+    --ink-blue: #1f4e8c;
+    --shadow: 13, 75, 69;
+    --gutter: 32px;
+}
+
+/* ---------- base ---------- */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: var(--base);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-wrap: break-word;
+}
+
+img,
+picture {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+a {
+    color: inherit;
+}
+
+h1,
+h2,
+h3,
+p,
+ul,
+ol,
+dl,
+dd,
+figure,
+blockquote {
+    margin: 0;
+}
+
+:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 3px;
+    border-radius: 6px;
+}
+
+.skip-link {
+    position: absolute;
+    left: 12px;
+    top: -100px;
+    z-index: 10;
+    padding: 10px 18px;
+    border-radius: 999px;
+    background: var(--sun);
+    color: var(--text);
+    font-weight: 700;
+}
+
+.skip-link:focus {
+    top: 12px;
+}
+
+/* A band's inner element carries the page width and gutter (§S12: no
+   generic wrapper class). */
+.site-header__inner,
+.site-footer__inner,
+.home-hero__inner,
+.home-pass,
+.site-main > .post-list,
+.home-highlight > div,
+.home-about,
+.post__media,
+.post-facts,
+.post__body,
+.post__footer,
+.post-archive__year,
+.tag-overview > * {
+    width: 100%;
+    max-width: calc(var(--width) + 2 * var(--gutter));
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+}
+
+/* A petrol band runs edge to edge; its content keeps the page width. */
+.page__header,
+.post__header,
+.home-hero {
+    padding-inline: max(var(--gutter), calc((100% - var(--width)) / 2));
+}
+
+/* ---------- header: the petrol band ---------- */
+
+.site-header {
+    background: var(--accent);
+    color: var(--accent-text);
+}
+
+.site-header__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 20px;
+    min-height: 84px;
+    padding-block: 14px;
+}
+
+.site-header__brand {
+    margin-right: auto;
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-style: italic;
+    font-size: 34px;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    text-decoration: none;
+}
+
+.site-header__brand::after {
+    content: '.';
+    color: var(--sun);
+}
+
+.site-header__nav .nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.site-header__nav .nav__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 18px;
+    border-radius: 999px;
+    text-decoration: none;
+}
+
+.site-header__nav .nav__link:hover {
+    background: rgba(255, 243, 220, 0.14);
+}
+
+.site-header__nav .nav__link--active,
+.site-header__nav .nav__link--active-path {
+    background: var(--accent-text);
+    color: var(--accent);
+}
+
+.lang-switch__list {
+    display: flex;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.lang-switch__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 14px;
+    border: 2px solid rgba(255, 243, 220, 0.4);
+    border-radius: 999px;
+    text-decoration: none;
+}
+
+a.lang-switch__link:hover {
+    border-color: var(--accent-text);
+}
+
+span.lang-switch__link {
+    border-color: transparent;
+    color: var(--band-soft);
+}
+
+/* ---------- buttons: pills ---------- */
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 0 20px;
+    border: 2px solid var(--text);
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 15px;
+    text-decoration: none;
+}
+
+.button:hover {
+    background: var(--text);
+    color: var(--bg);
+}
+
+.button--primary {
+    min-height: 52px;
+    padding: 0 26px;
+    border: 0;
+    background: var(--accent);
+    color: var(--accent-text);
+    font-size: 16px;
+}
+
+.button--primary:hover {
+    background: var(--text);
+    color: var(--accent-text);
+}
+
+/* ---------- pages: the header on the petrol band ---------- */
+
+.page__header {
+    padding-block: 48px 72px;
+    background: var(--accent);
+    color: var(--accent-text);
+}
+
+.page__title {
+    max-width: 1000px;
+    font-family: var(--font-heading);
+    font-weight: 900;
+    font-size: clamp(46px, 7vw, 104px);
+    line-height: 0.92;
+    letter-spacing: -0.04em;
+    font-variation-settings: 'opsz' 144;
+    text-wrap: balance;
+}
+
+.page__lead {
+    max-width: 34em;
+    margin-top: 20px;
+    font-size: 21px;
+    line-height: 1.5;
+    color: var(--band-soft);
+}
+
+/* A standard page: one centred column at the measure. */
+.page__body {
+    max-width: calc(var(--measure) + 2 * var(--gutter));
+    margin: 72px auto 0;
+    padding-inline: var(--gutter);
+}
+
+/* ---------- links that open a new tab ---------- */
+
+/* A site that opens external links in a new tab (plugin-link-attributes in
+   content, plugin-social-media-links' open_in_new_tab) gets them marked with
+   an arrow, so the change of context is announced visually (WCAG 3.2.5). */
+a[target='_blank']::after {
+    content: '\00a0\2197';
+    display: inline-block;
+    text-decoration: none;
+}
+
+/* ---------- footer: the petrol band again ---------- */
+
+.site-footer {
+    margin-top: 112px;
+    background: var(--accent);
+    color: var(--accent-text);
+}
+
+.site-footer__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 28px;
+    padding-block: 36px;
+    font-size: 14.5px;
+}
+
+.site-footer a {
+    text-underline-offset: 4px;
+}
+
+.site-footer .social-media-links__list,
+.site-footer__legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.site-footer .social-media-links__icon:empty {
+    display: none;
+}
+
+.site-footer__copy {
+    margin-left: auto;
+}
+
+/* ---------- running text (posts and pages) ---------- */
+
+.post__body,
+.page__body {
+    font-size: 19.5px;
+    line-height: 1.7;
+}
+
+.post__body > *,
+.page__body > * {
+    max-width: var(--measure);
+}
+
+.post__body > * + *,
+.page__body > * + * {
+    margin-top: calc(var(--space) + 2px);
+}
+
+.post__body h2,
+.page__body h2 {
+    margin-top: 60px;
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 42px;
+    line-height: 1;
+    letter-spacing: -0.03em;
+}
+
+.post__body h3,
+.page__body h3 {
+    margin-top: 44px;
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 29px;
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+}
+
+.post__body a,
+.page__body a {
+    font-weight: 600;
+    text-decoration-color: var(--coral);
+    text-decoration-thickness: 3px;
+    text-underline-offset: 5px;
+}
+
+/* a bullet list: coral dots */
+.post__body ul,
+.page__body ul {
+    padding-left: 0;
+    list-style: none;
+}
+
+.post__body ul li,
+.page__body ul li {
+    position: relative;
+    padding-left: 30px;
+}
+
+.post__body ul li + li,
+.page__body ul li + li {
+    margin-top: 10px;
+}
+
+.post__body ul li::before,
+.page__body ul li::before {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 0.55em;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--coral);
+}
+
+/* an ordered list reads as a route: dots joined by a dashed line on petrol;
+   a leading **bold** is the stop (§S11.5) */
+.post__body ol,
+.page__body ol {
+    padding: 30px 30px 34px;
+    border-radius: var(--radius);
+    background: var(--accent);
+    color: var(--band-soft);
+    list-style: none;
+}
+
+.post__body ol li,
+.page__body ol li {
+    position: relative;
+    padding: 0 0 22px 30px;
+    font-size: 15.5px;
+    line-height: 1.4;
+}
+
+.post__body ol li::before,
+.page__body ol li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 6px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--sun);
+}
+
+.post__body ol li::after,
+.page__body ol li::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 24px;
+    bottom: 2px;
+    border-left: 2px dashed rgba(255, 243, 220, 0.45);
+}
+
+.post__body ol li:last-child,
+.page__body ol li:last-child {
+    padding-bottom: 0;
+}
+
+.post__body ol li:last-child::after,
+.page__body ol li:last-child::after {
+    display: none;
+}
+
+.post__body ol strong,
+.page__body ol strong {
+    display: block;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 21px;
+    line-height: 1.15;
+    color: var(--accent-text);
+}
+
+.post__body ol a,
+.page__body ol a {
+    color: var(--accent-text);
+}
+
+.post__body :not(pre) > code,
+.page__body :not(pre) > code {
+    padding: 0.1em 0.4em;
+    border-radius: 6px;
+    background: var(--surface);
+    font-family: var(--font-mono);
+    font-size: 0.84em;
+}
+
+.post__body pre,
+.page__body pre {
+    overflow-x: auto;
+    padding: 20px 24px;
+    border-radius: 18px;
+    background: var(--surface);
+    font-family: var(--font-mono);
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.post__body hr,
+.page__body hr {
+    height: 2px;
+    background: var(--border);
+    border: 0;
+}
+
+/* A Markdown image with a title: plugin-images makes it a figure. */
+.post__body > .nera-image,
+.page__body > .nera-image {
+    margin-top: 40px;
+}
+
+.post__body > .nera-image img,
+.page__body > .nera-image img {
+    width: 100%;
+    border-radius: 22px;
+}
+
+.nera-image__caption {
+    margin-top: 12px;
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--muted);
+}
+
+/* Two pictures in one paragraph stand side by side (§S11.5); the paragraph
+   after them reads as their caption. */
+.post__body > p:has(> picture + picture),
+.post__body > p:has(> img + img),
+.page__body > p:has(> picture + picture),
+.page__body > p:has(> img + img) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 40px;
+}
+
+.post__body > p:has(> picture + picture) img,
+.post__body > p:has(> img + img) img,
+.page__body > p:has(> picture + picture) img,
+.page__body > p:has(> img + img) img {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    border-radius: 22px;
+}
+
+.post__body > p:has(> picture + picture) + p,
+.post__body > p:has(> img + img) + p,
+.page__body > p:has(> picture + picture) + p,
+.page__body > p:has(> img + img) + p {
+    margin-top: 12px;
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--muted);
+}
+
+/* the blockquote is the theme's one emphasised box: yellow, a leading
+   **bold** reads as its title (§S11.5) */
+.post__body > blockquote,
+.page__body > blockquote {
+    margin-top: 36px;
+    padding: 26px 30px;
+    border-radius: 22px;
+    background: var(--sun);
+    font-size: 18px;
+    line-height: 1.55;
+}
+
+.post__body > blockquote p + p,
+.page__body > blockquote p + p {
+    margin-top: 0.6em;
+}
+
+.post__body > blockquote > p:first-child > strong:first-child,
+.page__body > blockquote > p:first-child > strong:first-child {
+    display: block;
+    margin-bottom: 4px;
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 24px;
+    letter-spacing: -0.02em;
+}
+
+.post__body blockquote a,
+.page__body blockquote a {
+    text-decoration-color: currentColor;
+}
+
+/* a Markdown table: a sand header row, hairlines; cells wrap on a phone */
+.post__body table,
+.page__body table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.post__body th,
+.page__body th {
+    padding: 12px 16px;
+    background: var(--surface);
+    font-size: 14px;
+    font-weight: 700;
+    text-align: left;
+}
+
+.post__body th:first-child,
+.page__body th:first-child {
+    border-radius: 14px 0 0 14px;
+}
+
+.post__body th:last-child,
+.page__body th:last-child {
+    border-radius: 0 14px 14px 0;
+}
+
+.post__body td,
+.page__body td {
+    padding: 12px 16px;
+    border-bottom: 2px solid var(--border);
+    vertical-align: top;
+}
+
+/* @PAGES@ */
+
+/* ---------- motion: only for those who do not mind it ---------- */
+
+@media (prefers-reduced-motion: no-preference) {
+    .button,
+    .site-header__nav .nav__link {
+        transition: background-color 0.15s ease, color 0.15s ease;
+    }
+}
+
+/* ---------- one column below 900px ---------- */
+
+@media (max-width: 900px) {
+    :root {
+        --gutter: 20px;
+    }
+
+    .site-header__nav {
+        width: 100%;
+        margin-left: -12px;
+    }
+
+    .site-header__nav .nav__link {
+        padding: 0 12px;
+    }
+
+    .lang-switch {
+        margin-left: -14px;
+    }
+
+    .page__header {
+        padding-block: 32px 56px;
+    }
+
+    .page__body {
+        margin-top: 40px;
+    }
+
+    .post__body,
+    .page__body {
+        font-size: 18.5px;
+    }
+
+    .post__body h2,
+    .page__body h2 {
+        font-size: 34px;
+    }
+
+    /* @PHONE@ */
+}
