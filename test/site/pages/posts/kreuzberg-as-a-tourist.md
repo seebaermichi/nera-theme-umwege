@@ -5,7 +5,7 @@ slug: kreuzberg-as-a-tourist
 title: "A weekend at home, as a tourist"
 description: "Berlin from the elevated line, with a day ticket and no plans."
 date: 2025-05-09
-image: /images/jay-wennington-Y_aNcALhqZw-unsplash.jpg
+image: /images/jay-wennington-Y_aNcALhqZw-unsplash.jpg?ratio=4:3&focus=50,33
 image_alt: "A yellow elevated train"
 location: "Germany"
 tags: ["Germany"]

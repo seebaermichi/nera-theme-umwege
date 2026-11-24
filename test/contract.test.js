@@ -5,7 +5,7 @@ import fs from 'fs'
 import path from 'path'
 import { describe, expect, it } from 'vitest'
 import { ROOT, loadYaml } from './helpers/site.js'
-import { BLOCKS, HELPERS, PAGE_TYPES, PUBLIC_CLASSES, SEAMS, T_KEYS, THEME_KEYS, TOKEN_DEFAULTS, TOKENS, VIEWS, WITHDRAWN_CLASSES, WITHDRAWN_SEAMS } from './helpers/contract.js'
+import { BLOCKS, HELPERS, NOT_RENDERED, PAGE_TYPES, PUBLIC_CLASSES, SEAMS, T_KEYS, THEME_KEYS, TOKEN_DEFAULTS, TOKENS, VIEWS, WITHDRAWN_CLASSES, WITHDRAWN_SEAMS } from './helpers/contract.js'
 import { listFiles } from './helpers/html.js'
 
 const VIEWS_DIR = path.join(ROOT, 'views')
@@ -84,6 +84,14 @@ describe('Contract present', () => {
         const source = allViews()
         for (const name of PUBLIC_CLASSES) {
             expect(source, name).toMatch(new RegExp(`(\\.|'|")${name}(?![\\w-])`))
+        }
+    })
+
+    it('renders no element for a class Umwege leaves out (no card date or meta line, no hero button, no featured series)', () => {
+        const css = fs.readFileSync(path.join(ROOT, 'assets', 'css', 'theme.css'), 'utf-8')
+        for (const name of NOT_RENDERED) {
+            expect(allViews().split('\n').filter((line) => !line.trim().startsWith('//')).join('\n'), name).not.toMatch(new RegExp(`(\\.|'|")${name}(?![\\w-])`))
+            expect(css, name).not.toMatch(new RegExp(`\\.${name}(?![\\w-])`))
         }
     })
 

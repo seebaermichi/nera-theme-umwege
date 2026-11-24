@@ -5,7 +5,7 @@ slug: kreuzberg-as-a-tourist
 title: "Ein Wochenende zu Hause, als Touristin"
 description: "Berlin von der Hochbahn aus, mit einer Tageskarte und ohne Plan."
 date: 2025-05-09
-image: /images/jay-wennington-Y_aNcALhqZw-unsplash.jpg
+image: /images/jay-wennington-Y_aNcALhqZw-unsplash.jpg?ratio=4:3&focus=50,33
 image_alt: "Eine gelbe Hochbahn"
 location: "Deutschland"
 tags: ["Deutschland"]
