@@ -1,20 +1,27 @@
-//- One post (§S4.1, §S11.7, Ansitz): the header (series line, the author
-//- line with published and updated, title, lead, and location and
-//- image_note on the right), lying on the post-media seam when the post has
-//- an `image`; the body; its `facts` as a row of figures after the text;
-//- then the post-tags seam, the parts of its series and the post-pagination
-//- seam.
+//- One post (§S4.1, §S11.7, Umwege): the header on the petrol band (the
+//- series line; a kicker with the `location` chip and the author line with
+//- published and updated; the title; the lead), the post-media seam as a
+//- cover that overlaps the band's lower edge, the post's `facts` as four
+//- coloured tiles under it, the body (an ordered list in it reads as the
+//- route), then the post-tags seam, the parts of its series and the
+//- post-pagination seam.
 extends ../layouts/layout.pug
 
 block main
     article.post
         header.post__header
+            if meta.series && themeUmwege.seriesParts(meta.series, pageLang({ meta })).length
+                p.post__series
+                    | #{t('Series')}: #{meta.series}
+                    if meta.series_part !== undefined && meta.series_part !== null && meta.series_part !== ''
+                        | #{' · '}#{t('Part')} #{meta.series_part}
             div
-                if meta.series && themeUmwege.seriesParts(meta.series, pageLang({ meta })).length
-                    p.post__series
-                        | #{t('Series')}: #{meta.series}
-                        if meta.series_part !== undefined && meta.series_part !== null && meta.series_part !== ''
-                            | #{' · '}#{t('Part')} #{meta.series_part}
+                if meta.location
+                    p.post__location
+                        svg(viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' focusable='false')
+                            path(d='M12 21s7-6.1 7-11.5A7 7 0 0 0 5 9.5C5 14.9 12 21 12 21Z')
+                            circle(cx='12' cy='9.5' r='2.4')
+                        | #{meta.location}
                 p.post__meta
                     if meta.author || themeUmwege.author(pageLang({ meta })).name
                         span.post-author
@@ -28,26 +35,20 @@ block main
                         span
                             | #{t('Updated')}#{' '}
                             time.post__updated(datetime=isoDate(meta.updated))= formatDate(meta.updated, pageLang({ meta }))
-                h1.post__title= meta.title || app.name
-                if meta.lead
-                    p.post__lead= meta.lead
-            if meta.location || meta.image_note
-                div
-                    if meta.location
-                        p.post__location= meta.location
-                    if meta.image_note
-                        p.post__image-note= meta.image_note
+            h1.post__title= meta.title || app.name
+            if meta.lead
+                p.post__lead= meta.lead
         if meta.image
             .post__media
                 include ../partials/post-media.pug
-        .post__body
-            != content
         if themeUmwege.facts({ meta }).length
             dl.post-facts
                 each fact in themeUmwege.facts({ meta })
                     .post-facts__item
                         dt.post-facts__label= fact.label
                         dd.post-facts__value= fact.value
+        .post__body
+            != content
         footer.post__footer
             .post__tags
                 include ../partials/post-tags.pug

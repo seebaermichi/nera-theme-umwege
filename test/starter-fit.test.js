@@ -143,3 +143,81 @@ describe('Starter fit: home', () => {
         expect(plain).toMatch(/<section>\s*<h2>Tags<\/h2>\s*<\/section>/)
     })
 })
+
+describe('Starter fit: post', () => {
+    const html = page(pub, 'posts/dolomites-without-a-car.html')
+
+    it('shows the header on the band: series line, location chip, author line with published and updated, title, lead', () => {
+        const header = elementByClass(html, 'header', 'post__header')
+        expect(header).toMatch(/^\s*<p class="post__series">Series: Alps without a car · Part 3<\/p>/)
+        expect(header).toMatch(/<p class="post__location"><svg [^>]*aria-hidden="true"[\s\S]*?<\/svg>Italy<\/p>/)
+        expect(header).toMatch(/<span class="post-author__mark" aria-hidden="true">LS<\/span><span class="post__author post-author__name">Lena Sommer<\/span>/)
+        expect(header).toMatch(/Published <time class="post__date" datetime="2026-11-12">November 12, 2026<\/time>/)
+        expect(header).toMatch(/Updated <time class="post__updated" datetime="2026-11-15">November 15, 2026<\/time>/)
+        expect(header).toMatch(/<h1 class="post__title">Nine days in the Dolomites without a car<\/h1>\s*<p class="post__lead">Everyone told me you need one\./)
+    })
+
+    it('renders the cover through post-media, eagerly, right after the header', () => {
+        expect(html).toMatch(/<\/header>\s*<div class="post__media">\s*<picture>[\s\S]*?<img class="post__image" [^>]*alt="A mountain village in the snow[^"]*"[^>]*loading="eager"/)
+    })
+
+    it('renders no media element for a post without a picture', () => {
+        const plain = page(pub, 'posts/packing-list.html')
+        expect(plain).not.toContain('post__media')
+        expect(plain).not.toMatch(/<picture|<img/)
+        expect(plain).not.toContain('post__location')
+    })
+
+    it('shows its facts as four tiles under the cover, before the text', () => {
+        const facts = elementByClass(html, 'dl', 'post-facts')
+        expect(tags(facts, 'dt').length).toBe(4)
+        expect(stripTags(facts)).toBe('Duration 9 days Getting there Night train On foot 132 km Spent €780')
+        expect(html.indexOf('class="post-facts"')).toBeGreaterThan(html.indexOf('class="post__media"'))
+        expect(html.indexOf('class="post-facts"')).toBeLessThan(html.indexOf('class="post__body"'))
+    })
+
+    it('outputs the route as an ordered list, the paired pictures and the yellow box from content', () => {
+        const body = elementByClass(html, 'div', 'post__body')
+        expect(body).toMatch(/<ol>\s*<li><strong>Day 1: Berlin to Bolzano<\/strong> Night train via Munich, 11 hours<\/li>/)
+        expect(countTags(body.split('<ol>')[1].split('</ol>')[0], 'li')).toBe(5)
+        expect(body).toMatch(/<p>\s*<picture>[\s\S]*?<\/picture>\s*<picture>[\s\S]*?<\/picture>\s*<\/p>/)
+        expect(body).toMatch(/<blockquote>\s*<p><strong>Worth knowing<\/strong> The guest card/)
+    })
+
+    it('shows its tags through the post-tags seam', () => {
+        const postTags = elementByClass(html, 'div', 'post__tags')
+        expect(postTags).toMatch(/<section class="tag-links">/)
+        expect(tags(postTags, 'a').map((a) => attr(a, 'href'))).toEqual(['/tags/italy.html', '/tags/mountains.html', '/tags/first-snow.html', '/tags/without-a-car.html', '/tags/night-trains.html'])
+    })
+
+    it('lists the parts of its series, the current one marked', () => {
+        const part = page(pub, 'posts/hut-to-hut-val-gardena.html')
+        expect(part).toMatch(/<nav class="post-series" aria-label="Series">/)
+        const series = elementByClass(part, 'nav', 'post-series')
+        expect(series).toContain('<h2 class="post-series__title">Alps without a car</h2>')
+        const items = series.split('<li ').slice(1)
+        expect(items.length).toBe(3)
+        expect(items[0]).toMatch(/^class="post-series__item"><span>01<\/span><a href="\/posts\/south-tyrol-wrong-season\.html">/)
+        expect(items[1]).toMatch(/^class="post-series__item post-series__item--current"><span>02<\/span><a href="\/posts\/hut-to-hut-val-gardena\.html" aria-current="page">/)
+        expect(page(pub, 'de/posts/hut-to-hut-val-gardena.html')).toContain('<p class="post__series">Serie: Alps without a car · Teil 2</p>')
+    })
+
+    it('renders no series block or line and no facts for a post without them', () => {
+        const plain = page(pub, 'posts/packing-list.html')
+        expect(plain).not.toContain('post__series')
+        expect(plain).not.toContain('post-series')
+        expect(plain).not.toContain('post-facts')
+    })
+
+    it('shows previous / next from plugin-page-pagination, with the older post first', () => {
+        const pagination = elementByClass(page(pub, 'posts/jaipur-before-the-buses.html'), 'div', 'post__pagination')
+        expect(pagination).toMatch(/<nav class="page-pagination" aria-label="Pagination">/)
+        expect(pagination).toMatch(/page-pagination__link--previous" href="\/posts\/djerba-in-february\.html">Djerba in February, alone on the beach</)
+        expect(pagination).toMatch(/page-pagination__link--next" href="\/posts\/erg-chebbi-before-the-sun\.html">Erg Chebbi before the sun</)
+    })
+
+    it('links the feed through the feed-link seam', () => {
+        expect(html).toMatch(/<link rel="alternate" type="application\/atom\+xml" href="\/feed\.xml"/)
+        expect(page(pub, 'de/index.html')).toMatch(/<link rel="alternate" type="application\/atom\+xml" href="\/de\/feed\.xml"/)
+    })
+})
