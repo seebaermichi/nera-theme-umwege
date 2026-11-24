@@ -274,6 +274,12 @@ image: /images/u-bahn.jpg?ratio=4:3&focus=50,33   # x,y in percent of the origin
 
 `focus` only takes effect together with `ratio` (a crop). The crop is the picture everywhere the post appears, so pick a ratio between the widest and the tallest frame: `4:3` around the subject keeps it in the 2:1 cover and on a 4:5 card.
 
+A landscape whose subject sits at its lower edge (a ferry on the water, people on a beach) loses it in the 2:1 cover, which cuts a 3:2 photograph at top and bottom. Crop it to the cover's own ratio at the bottom; a subject near the middle of the width then also survives the narrower frames (cards, prints, the pass):
+
+```yaml
+image: /images/ferry.jpg?ratio=2:1&focus=50,100
+```
+
 **Fonts.** The theme ships its two families as `.woff2` under `assets/fonts/umwege/` (in your output: `/fonts/umwege/`), Latin and Latin Extended subsets each, with `font-display: swap` and relative URLs, so they work under a `base_path`. To use another family, self-host it and name it in `tokens.font.*`; the theme's own files are only downloaded where their family is used.
 
 | family | files | source |

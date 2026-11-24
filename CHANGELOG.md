@@ -2,6 +2,12 @@
 
 All notable changes to `@nera-static/theme-umwege` are documented in this file. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and the theme follows [semantic versioning](https://semver.org/) over its contract (see the README).
 
+## [1.0.1] - 2026-11-24
+
+### Changed
+
+-   README: where pictures are cut, a second case — a landscape whose subject sits at its lower edge, cropped to 2:1 at the bottom (`ratio=2:1&focus=50,100`) so the post's cover keeps it.
+
 ## [1.0.0] - 2026-11-24
 
 ### Added
