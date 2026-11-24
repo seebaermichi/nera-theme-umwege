@@ -1,0 +1,36 @@
+# nera-theme-umwege/config/theme.yaml — defaults
+label: Umwege
+tokens:
+    color:
+        bg: '#ffffff'
+        surface: '#f6ead4'
+        text: '#17231f'
+        muted: '#56635e'
+        accent: '#0d4b45'
+        accent_text: '#fff3dc'
+        border: '#dfe5e1'
+        focus: '#b8370f'
+        sun: '#ffcf3f'
+        coral: '#f4603a'
+        sky: '#cfe8f5'
+    font:
+        body: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
+        heading: "'Fraunces', Georgia, 'Times New Roman', serif"
+        mono: "ui-monospace, 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace"
+    size:
+        base: '1.0625rem'
+        measure: '41rem'
+        width: '73rem'
+        radius: '1.625rem'
+        space: '1.5rem'
+extra_css: []
+footer_links: []
+blog:
+    post_layouts: ['pages/post.pug']
+    home_posts: 7
+    featured_series: ''
+    highlight_tag: ''
+author:
+    name: ''
+    bio: ''
+    href: ''

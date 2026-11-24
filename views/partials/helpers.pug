@@ -1,0 +1,221 @@
+//- The shared functions every view calls (ROADMAP-themes §S2.2). Included by
+//- layouts/layout.pug before anything that uses them; a site that overrides
+//- the layout includes this file too.
+//-
+//- Pug compiles a page and everything it includes into one function, so a
+//- top-level name here would clash with a `const` of the same name in any
+//- included template (plugin-tags' tag-overview declares `lang`, for one).
+//- The theme therefore declares only the six helpers of §S2.2 and one object,
+//- `themeUmwege`, which holds the rest.
+-
+    // The language a page is in: its own `lang`, else the site's.
+    function pageLang(page) {
+        return (page && page.meta && page.meta.lang) || app.lang
+    }
+
+    // Whether a page is in the current page's language.
+    function sameLang(page) {
+        return pageLang(page) === pageLang({ meta })
+    }
+
+    // The home page of a language (§S2.8, rule 2), falling back to `/`.
+    function homeHref(lang) {
+        const home = themeUmwege.homePage(lang)
+        return home ? home.meta.href : '/'
+    }
+
+    // Formatted in UTC: a YAML date is midnight UTC, so a build machine in a
+    // time zone west of UTC would otherwise print the day before.
+    function formatDate(value, lang) {
+        const date = themeUmwege.toDate(value)
+        return date
+            ? date.toLocaleDateString(lang, { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })
+            : ''
+    }
+
+    function isoDate(value) {
+        const date = themeUmwege.toDate(value)
+        return date ? date.toISOString().slice(0, 10) : ''
+    }
+
+    // A path, or a `{ <lang>: path }` map resolved for `lang`. Undefined when
+    // the map has no path for that language.
+    function hrefFor(value, lang) {
+        if (typeof value === 'string') return value
+        if (value && typeof value === 'object' && typeof value[lang] === 'string') return value[lang]
+        return undefined
+    }
+
+    const themeUmwege = (() => {
+        const config = (app.theme && app.theme.config) || {}
+        const blog = config.blog || {}
+        const pages = () => (Array.isArray(pagesData) ? pagesData : []).filter((page) => page && page.meta)
+        const byHref = (a, b) => String(a.meta.href).localeCompare(String(b.meta.href))
+
+        // Frontmatter dates arrive as Date objects (YAML timestamps), a
+        // file's birth time, or a string. Null when the value is not a date.
+        const toDate = (value) => {
+            if (value === undefined || value === null || value === '') return null
+            const date = value instanceof Date ? value : new Date(value)
+            return Number.isNaN(date.getTime()) ? null : date
+        }
+
+        // A rendered `index.html` in that language with the shortest
+        // `dirname` (ties by href), or null.
+        const homePage = (lang) =>
+            pages()
+                .filter((page) => page.meta.layout && page.meta.filename === 'index.html' && pageLang(page) === lang)
+                .sort((a, b) => String(a.meta.dirname).length - String(b.meta.dirname).length || byHref(a, b))[0] || null
+
+        // The posts of a language (§S4.1): pages whose layout is listed in
+        // `blog.post_layouts`, newest first by `createdAt`, ties by href.
+        const posts = (lang) => {
+            const layouts = Array.isArray(blog.post_layouts) ? blog.post_layouts : ['pages/post.pug']
+            const time = (page) => {
+                const date = toDate(page.meta.createdAt)
+                return date ? date.getTime() : -8.64e15
+            }
+            return pages()
+                .filter((page) => layouts.includes(page.meta.layout) && pageLang(page) === lang)
+                .sort((a, b) => time(b) - time(a) || byHref(a, b))
+        }
+
+        // The home hero: the newest post with a frontmatter `image` (§S11.7),
+        // or null.
+        const heroPost = (lang) => posts(lang).find((page) => page.meta.image) || null
+
+        // The cards of the home's wall: the newest `blog.home_posts` (default
+        // 7) after the hero's post, which is not repeated there.
+        const homePosts = (lang) => {
+            const count = Number(blog.home_posts)
+            const hero = heroPost(lang)
+            return posts(lang).filter((page) => page !== hero).slice(0, Number.isInteger(count) && count >= 0 ? count : 7)
+        }
+
+        // `blog.highlight_tag` (§S11.3), '' when unset, and the newest six
+        // posts whose frontmatter `tags` contain it: the film strip.
+        const highlightTag = () => (typeof blog.highlight_tag === 'string' ? blog.highlight_tag : '')
+        const highlightPosts = (lang) => {
+            const tag = highlightTag()
+            if (!tag) return []
+            return posts(lang).filter((page) => Array.isArray(page.meta.tags) && page.meta.tags.includes(tag)).slice(0, 6)
+        }
+
+        // The posts of a language grouped by year, newest year first. A post
+        // whose date does not parse has no year and is left out.
+        const postsByYear = (lang) => {
+            const years = []
+            for (const post of posts(lang)) {
+                const date = toDate(post.meta.createdAt)
+                if (!date) continue
+                const year = date.getUTCFullYear()
+                const last = years[years.length - 1]
+                if (last && last.year === year) last.posts.push(post)
+                else years.push({ year, posts: [post] })
+            }
+            return years
+        }
+
+        // The design tokens as one `:root{…}` rule (§S2.5), '' when no token
+        // survives. A value is emitted only if it is a string or number
+        // without `<`, `>`, `{`, `}` or `;`, a group or token name only if it
+        // is made of letters, digits, `-` and `_`.
+        const tokenRule = () => {
+            const tokens = config.tokens || {}
+            const safe = (v) => ['string', 'number'].includes(typeof v) && !/[<>{};]/.test(String(v))
+            const safeName = (n) => /^[A-Za-z0-9_-]+$/.test(n)
+            const decls = []
+            for (const [group, values] of Object.entries(tokens)) {
+                if (!values || typeof values !== 'object' || !safeName(group)) continue
+                for (const [name, value] of Object.entries(values)) {
+                    if (safeName(name) && safe(value)) decls.push(`--theme-${group}-${name.replace(/_/g, '-')}:${value};`)
+                }
+            }
+            return decls.length ? `:root{${decls.join('')}}` : ''
+        }
+
+        // `extra_css` entries that are root-absolute paths: one leading `/`,
+        // not `//` or `/\` (a browser reads both as another host), and no tab,
+        // CR or LF anywhere (the URL parser drops them, so `/<tab>/host` would
+        // become `//host`).
+        const extraCss = () =>
+            (Array.isArray(config.extra_css) ? config.extra_css : [])
+                .filter((entry) => typeof entry === 'string' && /^\/(?![/\\])[^\t\n\r]*$/.test(entry))
+
+        // `footer_links` resolved for a language; an entry without a label or
+        // without a path for that language is left out.
+        const footerLinks = (lang) =>
+            (Array.isArray(config.footer_links) ? config.footer_links : [])
+                .filter((entry) => entry && typeof entry.label === 'string' && hrefFor(entry.href, lang))
+                .map((entry) => ({ label: entry.label, href: hrefFor(entry.href, lang) }))
+
+        // The language switch (§S2.8): every language of `app.translations`,
+        // the page's own as `current`, each other one linked to the page with
+        // the same `slug` in that language, else to that language's home.
+        // A language with neither is left out. Empty, so the switch is not
+        // rendered, when there are fewer than two translations or fewer than
+        // two links.
+        const languageLinks = (lang) => {
+            const translations = app.translations || {}
+            const slug = meta.slug
+            const links = Object.keys(translations)
+                .map((code) => {
+                    const name = (translations[code] && translations[code].language_name) || code.toUpperCase()
+                    if (code === lang) return { code, name, current: true }
+                    const twin = slug === undefined || slug === null
+                        ? null
+                        : pages()
+                            .filter((page) => page.meta.layout && page.meta.slug === slug && pageLang(page) === code)
+                            .sort(byHref)[0]
+                    const target = twin || homePage(code)
+                    return target ? { code, name, href: target.meta.href } : null
+                })
+                .filter(Boolean)
+            return Object.keys(translations).length >= 2 && links.length >= 2 ? links : []
+        }
+
+        // The parts of a series in a language (§S11.4): posts whose
+        // frontmatter `series` is `name`, ordered by `series_part`, then by
+        // date. Empty for an empty name.
+        const seriesParts = (name, lang) => {
+            if (typeof name !== 'string' || !name) return []
+            const part = (page) => {
+                const n = Number(page.meta.series_part)
+                return Number.isFinite(n) ? n : Number.MAX_SAFE_INTEGER
+            }
+            return posts(lang)
+                .filter((page) => page.meta.series === name)
+                .sort((a, b) => part(a) - part(b) || ((toDate(a.meta.createdAt) || 0) - (toDate(b.meta.createdAt) || 0)))
+        }
+
+        // `blog.featured_series` (§S11.3), '' when unset.
+        const featuredSeries = () => (typeof blog.featured_series === 'string' ? blog.featured_series : '')
+
+        // The `author` block of config/theme.yaml (§S11.3), resolved
+        // for a language: `href` may be a path or a `{ <lang>: path }` map,
+        // like `footer_links`.
+        const author = (lang) => {
+            const value = config.author || {}
+            const text = (v) => (typeof v === 'string' ? v : '')
+            return { name: text(value.name), bio: text(value.bio), href: hrefFor(value.href, lang) || '' }
+        }
+
+        // The round mark: the first letters of the name's first two words.
+        const initials = (name) =>
+            String(name || '').split(/\s+/).filter(Boolean).slice(0, 2).map((word) => word[0].toUpperCase()).join('')
+
+        // `facts` of a post: at most four `{ label, value }` with both set.
+        const facts = (page) =>
+            (Array.isArray(page.meta.facts) ? page.meta.facts : [])
+                .filter((fact) => fact && fact.label !== undefined && fact.value !== undefined && fact.label !== null && fact.value !== null)
+                .slice(0, 4)
+
+
+        // Day and month without the year, for rows under a year heading.
+        const dayMonth = (value, lang) => {
+            const date = toDate(value)
+            return date ? date.toLocaleDateString(lang, { month: 'short', day: 'numeric', timeZone: 'UTC' }) : ''
+        }
+
+        return { dayMonth, toDate, homePage, posts, heroPost, homePosts, highlightTag, highlightPosts, postsByYear, tokenRule, extraCss, footerLinks, languageLinks, seriesParts, featuredSeries, author, initials, facts }
+    })()

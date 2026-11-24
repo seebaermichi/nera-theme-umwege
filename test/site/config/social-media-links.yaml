@@ -1,0 +1,9 @@
+aria_label: Elsewhere
+# External links open in a new tab, like the links in page content
+# (config/link-attributes.yaml).
+open_in_new_tab: true
+social_media_links:
+    - name: Mastodon
+      href: https://mastodon.social/@example
+    - name: Instagram
+      href: https://www.instagram.com/example

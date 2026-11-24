@@ -1,0 +1,20 @@
+# Default class names (nav, nav__link, …) kept: the theme styles them.
+elements:
+    main_en:
+        - href: /archive.html
+          name: Trips
+        - href: /tags/road-notes.html
+          name: Road notes
+        - href: /about.html
+          name: About
+        - href: /feed.xml
+          name: Feed
+    main_de:
+        - href: /de/archiv.html
+          name: Reisen
+        - href: /de/tags/road-notes.html
+          name: Road notes
+        - href: /de/ueber-mich.html
+          name: Über mich
+        - href: /de/feed.xml
+          name: Feed

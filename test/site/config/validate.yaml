@@ -1,0 +1,36 @@
+# Every rule of `nera check` on, the opt-in ones included (ROADMAP-themes §S7, §S15),
+# except a11y-target-blank (see below),
+# and promoted to error so a finding fails the check.
+rules:
+    a11y-html-lang: error
+    a11y-title: error
+    a11y-h1: error
+    a11y-heading-skip: error
+    a11y-img-alt: error
+    a11y-form-label: error
+    a11y-link-name: error
+    a11y-main: error
+    a11y-skip-link: error
+    a11y-nav-name: error
+    a11y-duplicate-id: error
+    a11y-viewport-zoom: error
+    a11y-link-lang: error
+    # off: this site opens external links in a new tab on purpose
+    # (plugin-link-attributes, social links); the theme marks them with ↗
+    a11y-target-blank: off
+    a11y-reduced-motion: error
+    privacy-third-party: error
+    privacy-consent-leak: error
+    privacy-insecure: error
+    privacy-storage: error
+    legal-imprint-link: error
+    legal-privacy-link: error
+    legal-outdated-law: error
+    seo-jsonld: error
+legal:
+    imprint:
+        en: /imprint.html
+        de: /de/impressum.html
+    privacy:
+        en: /privacy.html
+        de: /de/datenschutz.html

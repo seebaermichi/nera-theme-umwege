@@ -1,0 +1,5 @@
+# Widths of ROADMAP-themes Revision R5. The post image is rendered eagerly
+# through the post-media seam.
+eager_first: false
+widths: [480, 800, 1600, 2400]
+og: false

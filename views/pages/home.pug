@@ -1,0 +1,26 @@
+//- The front page (ROADMAP-themes §S11.7, Ansitz): the newest post with a
+//- picture as the hero (the hero-media seam behind its title, description,
+//- a link t('Read more'), location and image_note), the page body as the
+//- statement, the next `blog.home_posts` posts as a wall of cards, the
+//- highlight strip, the featured series and the about block. Without a post
+//- with a picture, the page's own title is the <h1>.
+extends ../layouts/layout.pug
+
+block main
+    include ../partials/page-header.pug
+    if String(content || '').trim()
+        .home-statement
+            != content
+    if themeUmwege.homePosts(pageLang({ meta })).length
+        section.post-list
+            h2.post-list__title= t('Recent posts')
+            if meta.archive_href
+                a.post-list__more(href=meta.archive_href)= t('All posts')
+            ol.post-list__items
+                each item, index in themeUmwege.homePosts(pageLang({ meta }))
+                    - const position = index
+                    - const featured = index === 0
+                    include ../partials/post-card.pug
+    include ../partials/home-highlight.pug
+    include ../partials/home-series.pug
+    include ../partials/home-about.pug

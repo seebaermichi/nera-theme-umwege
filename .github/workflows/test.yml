@@ -1,0 +1,46 @@
+name: Test
+
+on:
+    push:
+        branches: [main, master]
+    pull_request:
+        branches: [main, master]
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+
+        strategy:
+            fail-fast: false
+            matrix:
+                # Node 20 reached end of life on 2026-04-30, and the dev
+                # toolchain (vitest 5) needs Node 22.12 or later, so CI tests
+                # 22 and 24. `engines` declares `>=22.12.0` to match.
+                node-version: [22, 24]
+
+        steps:
+            - uses: actions/checkout@v7
+
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v7
+              with:
+                  node-version: ${{ matrix.node-version }}
+                  cache: 'npm'
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Run linter
+              run: npm run lint
+
+            # plugin-images' variants of the fixture's photographs: a minute
+            # and a half cold, about a second warm.
+            - name: Cache the fixture's image variants
+              uses: actions/cache@v6
+              with:
+                  path: test/site/.nera-cache
+                  key: nera-cache-${{ hashFiles('test/site/theme/assets/**', 'test/site/pages/**', 'test/site/config/images.yaml', 'package-lock.json') }}
+                  restore-keys: nera-cache-
+
+            - name: Run tests
+              run: npx vitest run

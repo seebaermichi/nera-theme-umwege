@@ -1,0 +1,77 @@
+{
+    "name": "@nera-static/theme-umwege",
+    "version": "1.0.0",
+    "description": "Nera blog theme for travel writers: trips with facts, a route and places — presentation only.",
+    "type": "module",
+    "license": "MIT",
+    "author": "Michael Becker",
+    "keywords": [
+        "nera",
+        "nera-theme"
+    ],
+    "files": [
+        "views",
+        "assets",
+        "config"
+    ],
+    "exports": {
+        "./package.json": "./package.json"
+    },
+    "engines": {
+        "node": ">=22.12.0"
+    },
+    "nera": {
+        "generator": ">=4.15.0"
+    },
+    "scripts": {
+        "lint": "eslint .",
+        "test": "vitest"
+    },
+    "peerDependencies": {
+        "@nera-static/plugin-images": "^1.0.3",
+        "@nera-static/plugin-navigation": "^3.1.0",
+        "@nera-static/plugin-page-pagination": "^2.4.0",
+        "@nera-static/plugin-social-media-links": "^2.3.0",
+        "@nera-static/plugin-tags": "^3.4.1"
+    },
+    "peerDependenciesMeta": {
+        "@nera-static/plugin-images": {
+            "optional": true
+        },
+        "@nera-static/plugin-navigation": {
+            "optional": true
+        },
+        "@nera-static/plugin-page-pagination": {
+            "optional": true
+        },
+        "@nera-static/plugin-social-media-links": {
+            "optional": true
+        },
+        "@nera-static/plugin-tags": {
+            "optional": true
+        }
+    },
+    "devDependencies": {
+        "@nera-static/nera": "^1.28.0",
+        "@nera-static/plugin-feed": "^1.0.3",
+        "@nera-static/plugin-images": "^1.0.3",
+        "@nera-static/plugin-link-attributes": "^2.1.1",
+        "@nera-static/plugin-navigation": "^3.1.0",
+        "@nera-static/plugin-page-pagination": "^2.4.0",
+        "@nera-static/plugin-social-media-links": "^2.3.0",
+        "@nera-static/plugin-tags": "^3.4.1",
+        "eslint": "^10.12.0",
+        "vitest": "^5.0.3"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/seebaermichi/nera-theme-umwege.git"
+    },
+    "bugs": {
+        "url": "https://github.com/seebaermichi/nera-theme-umwege/issues"
+    },
+    "homepage": "https://github.com/seebaermichi/nera-theme-umwege#readme"
+}

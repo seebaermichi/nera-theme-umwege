@@ -1,0 +1,21 @@
+//- One post in a list (§S4.1a, §S11.5). In scope: `item` (the post,
+//- { content, meta }), `position` (its place in the list) and `featured`
+//- (true for the first card of the home's wall). A post with a frontmatter
+//- `image` shows it through the card-media seam; one without shows its
+//- description instead.
+li.post-list__item
+    article.post-card(class=(typeof featured !== 'undefined' && featured) ? 'post-card--featured' : undefined)
+        if item.meta.image
+            .post-card__media
+                include card-media.pug
+        .post-card__body
+            h3.post-card__title
+                a.post-card__link(href=item.meta.href)= item.meta.title
+            if !item.meta.image && item.meta.description
+                p.post-card__excerpt= item.meta.description
+            if item.meta.location || isoDate(item.meta.createdAt)
+                p.post-card__meta
+                    if item.meta.location
+                        span.post-card__location= item.meta.location
+                    if isoDate(item.meta.createdAt)
+                        time.post-card__date(datetime=isoDate(item.meta.createdAt))= formatDate(item.meta.createdAt, pageLang(item))

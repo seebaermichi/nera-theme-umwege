@@ -1,0 +1,18 @@
+//- The featured series on the home (§S11.3, `blog.featured_series`): label
+//- t('Series'), the name, a link t('Read more') to part one, and the first
+//- four parts in the page's language, the first one's picture large and the
+//- next three small (the titles are the links' text, hidden behind the
+//- pictures). Not rendered when the series has no part in the language.
+if themeUmwege.seriesParts(themeUmwege.featuredSeries(), pageLang({ meta })).length
+    section.home-series
+        div
+            p= t('Series')
+            h2= themeUmwege.featuredSeries()
+            a.button(href=themeUmwege.seriesParts(themeUmwege.featuredSeries(), pageLang({ meta }))[0].meta.href)= t('Read more')
+        ol
+            each item in themeUmwege.seriesParts(themeUmwege.featuredSeries(), pageLang({ meta })).slice(0, 4)
+                li
+                    a(href=item.meta.href)
+                        if item.meta.image
+                            include card-media.pug
+                        span= item.meta.title

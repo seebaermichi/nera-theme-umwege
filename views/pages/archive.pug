@@ -1,0 +1,28 @@
+//- All posts (§S4.1, §S11.7, Ansitz): header, body, one section per year
+//- (newest first) with the year's count; each row shows the picture
+//- (card-media seam), title, location and day and month; the tag-cloud seam
+//- at the end.
+extends ../layouts/layout.pug
+
+block main
+    include ../partials/page-header.pug
+    if String(content || '').trim()
+        .page__body
+            != content
+    each group in themeUmwege.postsByYear(pageLang({ meta }))
+        section.post-archive__year
+            h2
+                | #{group.year}
+                span.post-archive__count #{group.posts.length} #{t('posts')}
+            ul.post-archive__list
+                each item in group.posts
+                    li.post-archive__item
+                        if item.meta.image
+                            div
+                                include ../partials/card-media.pug
+                        p
+                            a(href=item.meta.href)= item.meta.title
+                            if item.meta.location
+                                span= item.meta.location
+                        time(datetime=isoDate(item.meta.createdAt))= themeUmwege.dayMonth(item.meta.createdAt, pageLang(item))
+    include ../partials/tag-cloud.pug

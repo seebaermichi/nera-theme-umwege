@@ -1,0 +1,37 @@
+# The acceptance site of @nera-static/theme-umwege (ROADMAP-themes §S15): the
+# sample content of design/blog-themes/umwege/ in English and German, the
+# theme used by local path. The photographs are under the Unsplash License
+# (CREDITS.md), not MIT.
+lang: en
+name: Umwege
+origin: https://example.org
+robots: index,follow
+theme: ../..
+
+translations:
+    en:
+        language_name: English
+    de:
+        language_name: Deutsch
+        # theme keys (§S2.6, §S4.3, §S11.6)
+        Skip to content: Zum Inhalt springen
+        Main navigation: Hauptnavigation
+        Language: Sprache
+        Legal: Rechtliches
+        Recent posts: Neueste Reisen
+        All posts: Alle Reisen
+        Published: Veröffentlicht
+        Updated: Aktualisiert
+        By: Von
+        Latest post: Neueste Reise
+        Series: Serie
+        Part: Teil
+        About the author: Über die Autorin
+        Read more: Weiterlesen
+        Tags: Orte und Themen
+        posts: Reisen
+        # footer_links labels (config/theme.yaml)
+        Imprint: Impressum
+        Privacy: Datenschutz
+        # plugin keys: plugin-page-pagination
+        Pagination: Blätternavigation
