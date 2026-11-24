@@ -5,7 +5,7 @@ slug: norwegian-coast-by-ferry
 title: "Nine ferries up the Norwegian coast"
 description: "Bergen to Tromsø without one long-distance bus: the timetables, the cabins worth paying for, and the crossing I slept through."
 date: 2026-10-08
-image: /images/charly-nguyen-jm2XnB8hh5A-unsplash.jpg
+image: /images/charly-nguyen-jm2XnB8hh5A-unsplash.jpg?ratio=2:1&focus=50,100
 image_alt: "A small ferry crossing a fjord under a heavy sky"
 location: "Norway"
 tags: ["Norway", "Without a car"]

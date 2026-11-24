@@ -1616,9 +1616,10 @@ a[target='_blank']::after {
     background: var(--surface);
 }
 
-/* a row without a picture keeps the text in the second column */
-.post-archive__item > p:first-child {
-    grid-column: 2;
+/* a row without a picture: no empty frame, the text starts at the edge */
+.post-archive__item:not(:has(> div)) {
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding-left: 26px;
 }
 
 .post-archive__item:hover {
@@ -2023,6 +2024,11 @@ a[target='_blank']::after {
 
     .post-archive__item time {
         display: none;
+    }
+
+    .post-archive__item:not(:has(> div)) {
+        grid-template-columns: minmax(0, 1fr);
+        padding-left: 20px;
     }
 
     .site-main > .tag-cloud {
