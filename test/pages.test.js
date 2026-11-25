@@ -1,5 +1,5 @@
 // Per-page guarantees of §S2.7 on every built page of every variant: no
-// script (but plugin-search's on the fixture's search page), the right
+// script (but plugin-search's on the fixture's search pages), the right
 // <html lang>, one <h1>, one main#main, a skip link first; and no JavaScript
 // in the package.
 import path from 'path'
@@ -8,16 +8,16 @@ import { ROOT } from './helpers/site.js'
 import { attr, countTags, listFiles, page, pages, tags } from './helpers/html.js'
 
 const builds = inject('builds')
-// The one page allowed a <script>: the fixture's search page, which the site
-// (not the theme) gives plugin-search's client script through the
+// The pages allowed a <script>: the fixture's search pages (en + de), which
+// the site (not the theme) gives plugin-search's client script through the
 // scripts-extra.pug seam. Exactly this one tag, with this src, is allowed.
-const SEARCH_PAGE = 'search.html'
+const SEARCH_PAGES = ['search.html', path.join('de', 'suche.html')]
 const searchScript = (name) => `<script src="${name === 'sub' ? '/sub' : ''}/js/search.js"></script>`
-const withoutAllowedScript = (name, file, html) => (file === SEARCH_PAGE ? html.replace(searchScript(name), '') : html)
+const withoutAllowedScript = (name, file, html) => (SEARCH_PAGES.includes(file) ? html.replace(searchScript(name), '') : html)
 
 describe('Every built page', () => {
     for (const name of ['default', 'overrides', 'noplugins', 'sub']) {
-        it(`${name}: has no <script> (but the search page's one), one <h1>, one main#main and the skip link first`, () => {
+        it(`${name}: has no <script> (but the search pages' one), one <h1>, one main#main and the skip link first`, () => {
             for (const { file, html } of pages(builds[name].public)) {
                 expect(countTags(withoutAllowedScript(name, file, html), 'script'), file).toBe(0)
                 expect(countTags(html, 'h1'), file).toBe(1)

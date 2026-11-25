@@ -1,7 +1,8 @@
-// The fixture's search page (plugin-search as an optional peer): a standard
-// page whose body is the plugin's interface, the only page in any variant
-// that loads a script — exactly plugin-search's, once, at the end of <body>.
-// Without plugins the page does not exist.
+// The fixture's search pages (plugin-search as an optional peer), English and
+// German: standard pages whose body is the plugin's interface, each on its own
+// language's index, the only pages in any variant that load a script —
+// exactly plugin-search's, once, at the end of <body>. Without plugins they do
+// not exist.
 import fs from 'fs'
 import path from 'path'
 import { describe, expect, inject, it } from 'vitest'
@@ -9,6 +10,9 @@ import { attr, countTags, elementByClass, page, pages, tags } from './helpers/ht
 
 const builds = inject('builds')
 const scriptSrcs = (html) => tags(html, 'script').map((attrs) => attr(attrs, 'src'))
+const searchInput = (html) => tags(html, 'input').find((attrs) => /search__input/.test(attrs))
+const readIndex = (publicDir, file) => JSON.parse(fs.readFileSync(path.join(publicDir, file), 'utf-8'))
+const DE_PAGE = path.join('de', 'suche.html')
 
 describe('Search page', () => {
     const html = page(builds.default.public, 'search.html')
@@ -22,7 +26,7 @@ describe('Search page', () => {
         expect(html).not.toContain('search__title')
 
         const body = elementByClass(html, 'div', 'page__body')
-        const input = tags(body, 'input').find((attrs) => /search__input/.test(attrs))
+        const input = searchInput(body)
         expect(input).toBeDefined()
         expect(attr(input, 'type')).toBe('search')
         expect(attr(input, 'aria-label')).toBe('Search')
@@ -41,7 +45,7 @@ describe('Search page', () => {
     })
 
     it('writes the English index, without the German posts (group_by_lang)', () => {
-        const index = JSON.parse(fs.readFileSync(path.join(builds.default.public, 'search-index.json'), 'utf-8'))
+        const index = readIndex(builds.default.public, 'search-index.json')
         expect(index.length).toBeGreaterThan(0)
         for (const entry of index) {
             expect(entry.lang, entry.href).toBe('en')
@@ -52,24 +56,81 @@ describe('Search page', () => {
         expect(index.some((entry) => entry.href === '/posts/dolomites-without-a-car.html')).toBe(true)
     })
 
-    it('is the only page with a <script>, in every variant', () => {
+    it('is, with its German twin, the only page with a <script>, in every variant', () => {
+        const expected = { noplugins: [], onelang: ['search.html'] }
         for (const name of ['default', 'overrides', 'allposts', 'sub', 'onelang', 'noplugins']) {
             const withScript = pages(builds[name].public).filter(({ html: h }) => countTags(h, 'script') > 0).map(({ file }) => file)
-            expect(withScript, name).toEqual(name === 'noplugins' ? [] : ['search.html'])
+            expect(withScript, name).toEqual(expected[name] || [DE_PAGE, 'search.html'])
         }
     })
 
     it('prefixes the script and the index with base_path', () => {
-        const sub = page(builds.sub.public, 'search.html')
-        expect(scriptSrcs(sub)).toEqual(['/sub/js/search.js'])
-        const input = tags(sub, 'input').find((attrs) => /search__input/.test(attrs))
-        expect(attr(input, 'data-search-index')).toBe('/sub/search-index.json')
+        for (const [file, index] of [['search.html', '/sub/search-index.json'], [DE_PAGE, '/sub/search-index.de.json']]) {
+            const sub = page(builds.sub.public, file)
+            expect(scriptSrcs(sub), file).toEqual(['/sub/js/search.js'])
+            expect(attr(searchInput(sub), 'data-search-index'), file).toBe(index)
+        }
     })
 
     it('does not exist without plugins (no page, no script, no index)', () => {
         const pub = builds.noplugins.public
-        expect(fs.existsSync(path.join(pub, 'search.html'))).toBe(false)
-        expect(fs.existsSync(path.join(pub, 'js', 'search.js'))).toBe(false)
-        expect(fs.existsSync(path.join(pub, 'search-index.json'))).toBe(false)
+        for (const file of ['search.html', DE_PAGE, path.join('js', 'search.js'), 'search-index.json', 'search-index.de.json']) {
+            expect(fs.existsSync(path.join(pub, file)), file).toBe(false)
+        }
+    })
+})
+
+describe('German search page', () => {
+    const html = page(builds.default.public, DE_PAGE)
+
+    it('renders the German header and the plugin\'s labels from the site\'s translations', () => {
+        const header = elementByClass(html, 'header', 'page__header')
+        expect(header).toContain('<h1 class="page__title">Suche</h1>')
+        expect(countTags(html, 'h1')).toBe(1)
+        const input = searchInput(elementByClass(html, 'div', 'page__body'))
+        expect(attr(input, 'aria-label')).toBe('Suche')
+        expect(attr(input, 'placeholder')).toBe('Reisen durchsuchen …')
+        expect(scriptSrcs(html)).toEqual(['/js/search.js'])
+    })
+
+    it('loads the German index (meta.searchIndexPath, not the default app.searchIndexPath)', () => {
+        expect(attr(searchInput(html), 'data-search-index')).toBe('/search-index.de.json')
+        expect(attr(searchInput(page(builds.default.public, 'search.html')), 'data-search-index')).toBe('/search-index.json')
+    })
+
+    it('writes the German index with German pages only', () => {
+        const index = readIndex(builds.default.public, 'search-index.de.json')
+        expect(index.length).toBeGreaterThan(0)
+        for (const entry of index) {
+            expect(entry.lang, entry.href).toBe('de')
+            expect(entry.href, entry.href).toMatch(/^\/de\//)
+        }
+        expect(index.some((entry) => entry.href === '/de/posts/dolomites-without-a-car.html')).toBe(true)
+    })
+
+    it('is paired with the English page by the language switch', () => {
+        const switchLinks = (h) => tags(h, 'a').filter((a) => /lang-switch__link/.test(a))
+        const [toDe] = switchLinks(page(builds.default.public, 'search.html'))
+        expect(attr(toDe, 'href')).toBe('/de/suche.html')
+        expect(attr(toDe, 'hreflang')).toBe('de')
+        const [toEn] = switchLinks(html)
+        expect(attr(toEn, 'href')).toBe('/search.html')
+        expect(attr(toEn, 'hreflang')).toBe('en')
+    })
+})
+
+describe('The "Search" menu item', () => {
+    const navLinks = (h) => tags(elementByClass(h, 'header', 'site-header'), 'a').filter((a) => /nav__link/.test(a))
+    const searchLink = (h, href) => navLinks(h).find((a) => attr(a, 'href') === href)
+
+    it('is in both menus, and active on the search page only', () => {
+        for (const [home, file, href] of [['index.html', 'search.html', '/search.html'], [path.join('de', 'index.html'), DE_PAGE, '/de/suche.html']]) {
+            const onHome = searchLink(page(builds.default.public, home), href)
+            expect(onHome, home).toBeDefined()
+            expect(attr(onHome, 'class'), home).not.toMatch(/nav__link--active\b/)
+            const onSearch = searchLink(page(builds.default.public, file), href)
+            expect(attr(onSearch, 'class'), file).toMatch(/\bnav__link--active\b/)
+        }
+        expect(navLinks(page(builds.default.public, 'index.html')).map((a) => attr(a, 'href'))).not.toContain('/de/suche.html')
     })
 })

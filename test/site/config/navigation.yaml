@@ -7,6 +7,8 @@ elements:
           name: Road notes
         - href: /about.html
           name: About
+        - href: /search.html
+          name: Search
         - href: /feed.xml
           name: Feed
     main_de:
@@ -16,5 +18,7 @@ elements:
           name: Road notes
         - href: /de/ueber-mich.html
           name: Über mich
+        - href: /de/suche.html
+          name: Suche
         - href: /de/feed.xml
           name: Feed

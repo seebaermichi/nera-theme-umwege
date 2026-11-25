@@ -116,6 +116,7 @@ export const VARIANTS = {
         fs.rmSync(path.join(site, 'theme', 'views', 'pages'), { recursive: true, force: true })
         fs.rmSync(path.join(site, 'theme', 'assets', 'js'), { recursive: true, force: true })
         fs.rmSync(path.join(site, 'pages', 'search.md'), { force: true })
+        fs.rmSync(path.join(site, 'pages', 'de', 'suche.md'), { force: true })
         // without plugin-images the originals are what the pages show
         fs.rmSync(path.join(site, '.neraignore'), { force: true })
     },

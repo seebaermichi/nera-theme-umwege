@@ -35,3 +35,8 @@ translations:
         Privacy: Datenschutz
         # plugin keys: plugin-page-pagination
         Pagination: Blätternavigation
+        # plugin keys: plugin-search (the template's heading, the input's
+        # accessible name and its placeholder)
+        search_title: Suche
+        search_label: Suche
+        search_placeholder: Reisen durchsuchen …
