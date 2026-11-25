@@ -237,6 +237,20 @@ export const PLUGIN_CLASSES = {
         range: '^3.1.0',
         classes: ['nav', 'nav--list', 'nav__item', 'nav__link', 'nav__link--active', 'nav__link--active-path'],
     },
+    // The search page's interface (views/search.pug) and the results its
+    // client script (views/search.js) writes into `ul.search__results`.
+    '@nera-static/plugin-search': {
+        range: '^2.3.0',
+        classes: [
+            'search__title',
+            'search__input',
+            'search__results',
+            'search__item',
+            'search__link',
+            'search__description',
+            'search__highlight',
+        ],
+    },
     '@nera-static/plugin-social-media-links': {
         range: '^2.3.0',
         classes: [
