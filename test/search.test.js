@@ -7,6 +7,7 @@ import fs from 'fs'
 import path from 'path'
 import { describe, expect, inject, it } from 'vitest'
 import { attr, countTags, elementByClass, page, pages, tags } from './helpers/html.js'
+import { ROOT } from './helpers/site.js'
 
 const builds = inject('builds')
 const scriptSrcs = (html) => tags(html, 'script').map((attrs) => attr(attrs, 'src'))
@@ -132,5 +133,64 @@ describe('The "Search" menu item', () => {
             expect(attr(onSearch, 'class'), file).toMatch(/\bnav__link--active\b/)
         }
         expect(navLinks(page(builds.default.public, 'index.html')).map((a) => attr(a, 'href'))).not.toContain('/de/suche.html')
+    })
+})
+
+describe('The search page in the Umwege look (theme.css)', () => {
+    const css = fs.readFileSync(path.join(ROOT, 'assets', 'css', 'theme.css'), 'utf-8').replace(/\/\*[\s\S]*?\*\//g, '')
+    const blockFrom = (start) => {
+        const open = css.indexOf('{', css.indexOf(start))
+        let depth = 0
+        for (let i = open; i < css.length; i++) {
+            if (css[i] === '{') depth++
+            if (css[i] === '}' && --depth === 0) return css.slice(open + 1, i)
+        }
+        return ''
+    }
+    const phone = blockFrom('@media (max-width: 900px)')
+    const motion = blockFrom('@media (prefers-reduced-motion: no-preference)')
+    const rule = (text, selector) => [...text.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
+        .filter(([, prelude]) => prelude.split(',').map((x) => x.trim()).includes(selector))
+        .map(([, , body]) => body).join('\n')
+    const px = (body, property) => Number((new RegExp(`(?:^|[^-])${property}: (\\d+)px`).exec(body) || [])[1])
+
+    it('hides the results list while it is empty: no query, or no hit (D5)', () => {
+        expect(rule(css, '.search__results:empty')).toMatch(/display: none/)
+    })
+
+    it('marks a match ink on sun, and ink on white on a row turned sun by hover (D7)', () => {
+        const highlight = rule(css, '.search__highlight')
+        expect(highlight).toMatch(/background: var\(--sun\)/)
+        expect(highlight).toMatch(/color: var\(--text\)/)
+        expect(rule(css, '.search__results .search__item:hover')).toMatch(/background: var\(--sun\)/)
+        expect(rule(css, '.search__item:hover .search__highlight')).toMatch(/background: var\(--bg\)/)
+    })
+
+    it('sets small text in ink on a row turned sun by hover (muted on sun is 4.3:1)', () => {
+        for (const selector of ['.search__item:hover .search__description', '.post-archive__item:hover p span']) {
+            expect(rule(css, selector), selector).toMatch(/color: var\(--text\)/)
+        }
+    })
+
+    it('keeps the bullets, indent and gap of `.page__body ul` off the results (two-class selectors)', () => {
+        expect(rule(css, '.search__results .search__item::before')).toMatch(/content: none/)
+        expect(rule(css, '.search__results .search__item')).toMatch(/padding: 20px 26px/)
+        expect(rule(css, '.search__results .search__item + .search__item')).toMatch(/margin-top: 0/)
+        expect(rule(css, '.search__item .search__link')).toMatch(/text-decoration: none/)
+        expect(rule(css, '.search__results')).toMatch(/list-style: none/)
+    })
+
+    it('makes the input a full-width field at least 44 px tall, on desktop and phone', () => {
+        const input = rule(css.replace(phone, ''), '.search__input')
+        expect(input).toMatch(/width: 100%/)
+        expect(input).toMatch(/border: 2px solid var\(--accent\)/)
+        expect(px(input, 'min-height')).toBeGreaterThanOrEqual(44)
+        expect(px(rule(phone, '.search__input'), 'min-height')).toBeGreaterThanOrEqual(44)
+        expect(rule(css, '.search__input::placeholder')).toMatch(/color: var\(--muted\)/)
+    })
+
+    it('fades a row\'s hover only for visitors without a reduced-motion preference', () => {
+        expect(rule(motion, '.search__results .search__item')).toMatch(/transition/)
+        expect(rule(css.replace(motion, ''), '.search__results .search__item')).not.toMatch(/transition/)
     })
 })

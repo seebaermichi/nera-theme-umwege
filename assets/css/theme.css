@@ -1757,6 +1757,120 @@ a[target='_blank']::after {
     border-radius: 22px;
 }
 
+/* ---------- search page (plugin-search's interface) ---------- */
+
+/* The plugin's own heading, for a site that keeps it (`show_title`). */
+.search__title {
+    margin-bottom: 28px;
+    font-family: var(--font-heading);
+    font-weight: 900;
+    font-size: 56px;
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+}
+
+/* the input: a framed pill at the measure; the focus ring is the global
+   :focus-visible outline, and this later rule keeps the pill's radius */
+.search__input {
+    display: block;
+    width: 100%;
+    min-height: 60px;
+    padding: 0 28px;
+    border: 2px solid var(--accent);
+    border-radius: 999px;
+    background: var(--bg);
+    color: var(--text);
+    font: inherit;
+    font-size: 19px;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.search__input::placeholder {
+    color: var(--muted);
+    opacity: 1;
+}
+
+/* the results: the archive's sand rows. The selectors carry two classes, so
+   they beat the bullets, padding and link underline of `.page__body ul` and
+   `.page__body a` the list sits in. */
+.search__results {
+    display: grid;
+    gap: 14px;
+    margin: 28px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* no query, or no hit: the list is empty and takes no room (D5) */
+.search__results:empty {
+    display: none;
+}
+
+.search__results .search__item {
+    position: relative;
+    padding: 20px 26px;
+    border-radius: 22px;
+    background: var(--surface);
+}
+
+.search__results .search__item + .search__item {
+    margin-top: 0;
+}
+
+.search__results .search__item::before {
+    content: none;
+}
+
+.search__results .search__item:hover {
+    background: var(--sun);
+}
+
+.search__item .search__link {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 25px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+}
+
+/* the whole row is the link */
+.search__item .search__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+}
+
+.search__description {
+    margin-top: 6px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--muted);
+}
+
+/* the match: ink on sun; on a row turned sun by hover, ink on white */
+.search__highlight {
+    padding: 0 3px;
+    border-radius: 4px;
+    background: var(--sun);
+    color: var(--text);
+    font-weight: 700;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+}
+
+.search__item:hover .search__highlight {
+    background: var(--bg);
+}
+
+/* muted on sun is below 4.5:1: a row turned sun by hover sets its small
+   text in ink */
+.post-archive__item:hover p span,
+.search__item:hover .search__description {
+    color: var(--text);
+}
+
 /* ---------- motion: only for those who do not mind it ---------- */
 
 @media (prefers-reduced-motion: no-preference) {
@@ -1778,7 +1892,8 @@ a[target='_blank']::after {
     }
 
     .tag-links__item,
-    .page-pagination__link {
+    .page-pagination__link,
+    .search__results .search__item {
         transition: background-color 0.15s ease;
     }
 }
@@ -2050,5 +2165,23 @@ a[target='_blank']::after {
 
     .tag-overview__item-title {
         font-size: 27px;
+    }
+
+    .search__title {
+        font-size: 42px;
+    }
+
+    .search__input {
+        min-height: 54px;
+        padding: 0 22px;
+        font-size: 18px;
+    }
+
+    .search__results .search__item {
+        padding: 16px 20px;
+    }
+
+    .search__item .search__link {
+        font-size: 20px;
     }
 }

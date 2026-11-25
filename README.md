@@ -185,6 +185,82 @@ open_in_new_tab: true
 
 `nera check`'s opt-in rule `a11y-target-blank` reports every `target="_blank"`; a site that opens new tabs on purpose leaves it off (its default) or sets `a11y-target-blank: off` in `config/validate.yaml`. Links of the theme itself (header, footer, legal links) are internal and never open a new tab.
 
+## Search
+
+With `@nera-static/plugin-search` 2.3 or later, a search page looks like the rest of the theme: the input as a framed pill at the measure, the results as the archive's sand rows (title in Fraunces, underneath the page's `description`, or for a page without one the snippet around the match, with the match in ink on sun). Before anyone types, and when nothing matches, the page shows the input alone. The theme only styles the plugin's classes; the script is the plugin's, and it loads on the search page only, so every other page stays free of JavaScript.
+
+```bash
+npm install @nera-static/plugin-search
+npx nera-search     # theme/views/vendor/plugin-search/search.pug and theme/assets/js/search.js
+```
+
+The published template ends with `script(src="/js/search.js")`, which would put the script inside `<main>`. Delete that last line from `theme/views/vendor/plugin-search/search.pug`; the `scripts-extra` seam loads it at the end of `<body>` instead:
+
+```pug
+//- theme/views/partials/scripts-extra.pug — plugin-search's script, on the search page only
+if meta.layout === 'pages/search.pug'
+    script(src='/js/search.js')
+```
+
+A page type of your own, so the search page reads like a standard page (the page header brings its one `<h1>`):
+
+```pug
+//- theme/views/pages/search.pug
+extends /layouts/layout.pug
+
+block main
+    include /partials/page-header.pug
+    .page__body
+        != content
+        include /vendor/plugin-search/search.pug
+```
+
+```yaml
+# config/search.yaml — one index per language; the page header replaces the plugin's heading
+fields:
+    - title
+    - description
+    - content
+    - href
+strip_html: true
+group_by_lang: true
+show_title: false
+```
+
+One page per language, with the same `slug`, so the language switch pairs them:
+
+```markdown
+---
+layout: pages/search.pug
+lang: en
+slug: search
+title: Search
+lead: Every trip, by place, route or a word from the post.
+---
+```
+
+```yaml
+# config/navigation.yaml — the menu item, per language
+elements:
+    main_en:
+        - href: /search.html
+          name: Search
+    main_de:
+        - href: /de/suche.html
+          name: Suche
+```
+
+Translate the plugin's texts per language in `config/app.yaml` (`search_label` names the input, `search_placeholder` is its hint):
+
+```yaml
+translations:
+    de:
+        search_label: Suche
+        search_placeholder: Reisen durchsuchen …
+```
+
+The plugin writes its index into your source assets on every build; keep it out of git with `theme/assets/search-index*.json` in your `.gitignore`.
+
 ## Configuration: `config/theme.yaml`
 
 The theme's `config/theme.yaml` holds every key with a default. Your site's `config/theme.yaml` is deep-merged over it: set only what you change. Arrays are replaced as a whole.
@@ -372,6 +448,7 @@ The plugin classes the theme styles, all optional peer dependencies:
 | `@nera-static/plugin-page-pagination` | `^2.4.0` | `page-pagination`, `page-pagination__link`, `page-pagination__link--previous`, `page-pagination__link--next` |
 | `@nera-static/plugin-images` | `^1.0.3` | `nera-image`, `nera-image__caption` |
 | `@nera-static/plugin-navigation` | `^3.1.0` | `nav`, `nav--list`, `nav__item`, `nav__link`, `nav__link--active`, `nav__link--active-path` — only inside `.site-header__nav` |
+| `@nera-static/plugin-search` | `^2.3.0` | `search__title`, `search__input`, `search__results`, `search__item`, `search__link`, `search__description`, `search__highlight` |
 | `@nera-static/plugin-social-media-links` | `^2.3.0` | `social-media-links` and its elements — only inside `.site-footer` |
 
 ## What your site must do
