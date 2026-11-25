@@ -6,12 +6,13 @@ All notable changes to `@nera-static/theme-umwege` are documented in this file. 
 
 ### Added
 
--   `@nera-static/plugin-search` `^2.3.0` as an optional peer, styled when present: the input as a framed pill at the measure, the results as the archive's sand rows (title in Fraunces, snippet in DM Sans), the match in ink on sun, and an empty results list that takes no room (before a query, and when nothing matches). The classes are `search__title`, `search__input`, `search__results`, `search__item`, `search__link`, `search__description` and `search__highlight`. The theme adds no view, seam, key or `t()` key and no JavaScript.
+-   `@nera-static/plugin-search` `^2.3.0` as an optional peer, styled when present: the input as a framed pill at the measure with its clear button as a petrol cross, the results as the archive's sand rows (title in Fraunces, snippet in DM Sans), the match in ink on sun, and an empty results list that takes no room (before a query, and when nothing matches). The classes are `search__title`, `search__input`, `search__results`, `search__item`, `search__link`, `search__description` and `search__highlight`. The theme adds no view, seam, key or `t()` key and no JavaScript.
 -   README: a "Search" section with the setup, ready to copy — the `scripts-extra.pug` override that loads the plugin's script on the search page only, a `pages/search.pug` page type, `config/search.yaml` with one index per language, the search pages and the menu item.
 
 ### Fixed
 
 -   On an archive row turned sun by hover, the location line is set in ink: muted on sun reaches only 4.3:1.
+-   A page shorter than the window, such as the search page or a tag page with few posts, ends with the footer at the window's bottom instead of leaving white below it: the body is a column at least as high as the window, and main takes the rest.
 
 ## [1.0.1] - 2026-11-24
 

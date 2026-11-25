@@ -189,6 +189,14 @@ describe('The search page in the Umwege look (theme.css)', () => {
         expect(rule(css, '.search__input::placeholder')).toMatch(/color: var\(--muted\)/)
     })
 
+    it('draws the field\'s clear button as a petrol cross, without a url() (§S11.2)', () => {
+        const cancel = rule(css, '.search__input::-webkit-search-cancel-button')
+        expect(cancel).toMatch(/appearance: none/)
+        expect(cancel.match(/linear-gradient\(-?45deg, /g)).toHaveLength(2)
+        expect(cancel.match(/var\(--accent\)/g)).toHaveLength(4)
+        expect(cancel).not.toMatch(/url\(/)
+    })
+
     it('fades a row\'s hover only for visitors without a reduced-motion preference', () => {
         expect(rule(motion, '.search__results .search__item')).toMatch(/transition/)
         expect(rule(css.replace(motion, ''), '.search__results .search__item')).not.toMatch(/transition/)

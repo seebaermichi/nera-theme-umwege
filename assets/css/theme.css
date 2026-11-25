@@ -118,6 +118,20 @@ body {
     overflow-wrap: break-word;
 }
 
+/* a page shorter than the window still ends with the footer at the
+   window's bottom: the body is a column at least as high as the window and
+   main takes the rest. Every band stretches to the full width, as before. */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+.site-main {
+    flex: 1 0 auto;
+}
+
 img,
 picture {
     display: block;
@@ -1782,6 +1796,20 @@ a[target='_blank']::after {
     color: var(--text);
     font: inherit;
     font-size: 19px;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+/* the field's clear button: a petrol cross, not the browser's blue. Drawn
+   from two gradients, since every url() in this file is a font (§S11.2). */
+.search__input::-webkit-search-cancel-button {
+    width: 16px;
+    height: 16px;
+    margin-left: 12px;
+    background:
+        linear-gradient(45deg, transparent calc(50% - 1.5px), var(--accent) calc(50% - 1.5px), var(--accent) calc(50% + 1.5px), transparent calc(50% + 1.5px)),
+        linear-gradient(-45deg, transparent calc(50% - 1.5px), var(--accent) calc(50% - 1.5px), var(--accent) calc(50% + 1.5px), transparent calc(50% + 1.5px));
+    cursor: pointer;
     -webkit-appearance: none;
     appearance: none;
 }

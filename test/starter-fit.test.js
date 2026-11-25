@@ -328,3 +328,25 @@ describe('Starter fit: the cover on a phone (§S13; measured 350×263 at 390 px)
         }
     })
 })
+
+describe('Starter fit: a page shorter than the window', () => {
+    const css = fs.readFileSync(path.join(ROOT, 'assets', 'css', 'theme.css'), 'utf-8').replace(/\/\*[\s\S]*?\*\//g, '')
+    const rule = (selector) => [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
+        .filter(([, prelude]) => prelude.split(',').map((x) => x.trim()).includes(selector))
+        .map(([, , body]) => body).join('\n')
+
+    it('ends with the footer at the window\'s bottom: body is a column at least the window high, main grows', () => {
+        const body = rule('body')
+        expect(body).toMatch(/display: flex/)
+        expect(body).toMatch(/flex-direction: column/)
+        expect(body).toMatch(/min-height: 100vh/)
+        expect(body).toMatch(/min-height: 100dvh/)
+        expect(rule('.site-main')).toMatch(/flex: 1 0 auto/)
+    })
+
+    it('keeps every band at the full width: no band is a row or shrinks across', () => {
+        for (const selector of ['body', '.site-header', '.site-main', '.site-footer']) {
+            expect(rule(selector), selector).not.toMatch(/align-items|margin-inline: auto|margin: 0 auto/)
+        }
+    })
+})
