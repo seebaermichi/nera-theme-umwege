@@ -1,0 +1,4 @@
+//- Seam override: plugin-search's client script, on the search page only,
+//- so every other page stays free of JavaScript.
+if meta.layout === 'pages/search.pug'
+    script(src='/js/search.js')

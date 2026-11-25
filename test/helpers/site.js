@@ -21,6 +21,13 @@ const LINKED = ['views', 'assets', 'config', 'package.json', 'node_modules']
 // minute and a half to encode cold, about a second warm (global-setup.js
 // warms it once per run).
 const NOT_COPIED = new Set(['public', 'node_modules'])
+// plugin-search's index, which a direct `nera build` in test/site leaves in
+// the fixture's assets folder (git-ignored): every build writes its own.
+const SEARCH_INDEX = /^theme\/assets\/search-index(\.[a-z-]+)?\.json$/
+const copied = (src) => {
+    const rel = path.relative(SITE, src).split(path.sep)
+    return !NOT_COPIED.has(rel[0]) && !SEARCH_INDEX.test(rel.join('/'))
+}
 
 // The theme's peers (§S11.1). The fixture also uses plugin-feed (the
 // feed-link seam and the "Feed" menu item), which the theme styles nothing of.
@@ -43,7 +50,7 @@ export function makeSite(name, mutate) {
     const site = path.join(base, 'test', 'site')
     fs.cpSync(SITE, site, {
         recursive: true,
-        filter: (src) => !NOT_COPIED.has(path.relative(SITE, src).split(path.sep)[0]),
+        filter: copied,
     })
     if (mutate) mutate(site)
     return { base, site }
@@ -97,7 +104,7 @@ export const VARIANTS = {
             })
         ),
     // Without plugins: no plugin dependency, no vendor copies, no seam
-    // overrides — every seam at the theme's default.
+    // overrides, no search page — every seam at the theme's default.
     noplugins: (site) => {
         const pkgFile = path.join(site, 'package.json')
         const pkg = JSON.parse(fs.readFileSync(pkgFile, 'utf-8'))
@@ -105,6 +112,10 @@ export const VARIANTS = {
         fs.writeFileSync(pkgFile, `${JSON.stringify(pkg, null, 4)}\n`)
         fs.rmSync(path.join(site, 'theme', 'views', 'vendor'), { recursive: true, force: true })
         fs.rmSync(path.join(site, 'theme', 'views', 'partials'), { recursive: true, force: true })
+        // the search page belongs to a site that installed plugin-search (D6)
+        fs.rmSync(path.join(site, 'theme', 'views', 'pages'), { recursive: true, force: true })
+        fs.rmSync(path.join(site, 'theme', 'assets', 'js'), { recursive: true, force: true })
+        fs.rmSync(path.join(site, 'pages', 'search.md'), { force: true })
         // without plugin-images the originals are what the pages show
         fs.rmSync(path.join(site, '.neraignore'), { force: true })
     },

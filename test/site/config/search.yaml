@@ -1,0 +1,12 @@
+# plugin-search: one index per language (search-index.json for English,
+# search-index.de.json for German), so each search page finds only posts in
+# its own language. The page header brings the page's <h1>, so the
+# template's own is off.
+fields:
+    - title
+    - description
+    - content
+    - href
+strip_html: true
+group_by_lang: true
+show_title: false
