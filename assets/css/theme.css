@@ -1821,9 +1821,12 @@ a[target='_blank']::after {
 
 /* the results: the archive's sand rows. The selectors carry two classes, so
    they beat the bullets, padding and link underline of `.page__body ul` and
-   `.page__body a` the list sits in. */
+   `.page__body a` the list sits in. Its one track may shrink below its
+   content: an `auto` track grows to a hit's longest unbroken word and pushes
+   the rows past a phone's edge, so the rows also break such a word. */
 .search__results {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 14px;
     margin: 28px 0 0;
     padding: 0;
@@ -1840,6 +1843,7 @@ a[target='_blank']::after {
     padding: 20px 26px;
     border-radius: 22px;
     background: var(--surface);
+    overflow-wrap: anywhere;
 }
 
 .search__results .search__item + .search__item {

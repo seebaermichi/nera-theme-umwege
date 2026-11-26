@@ -180,6 +180,11 @@ describe('The search page in the Umwege look (theme.css)', () => {
         expect(rule(css, '.search__results')).toMatch(/list-style: none/)
     })
 
+    it('keeps a row with a long unbroken word inside a phone\'s viewport (one shrinkable track, words break)', () => {
+        expect(rule(css, '.search__results')).toMatch(/grid-template-columns: minmax\(0, 1fr\)/)
+        expect(rule(css, '.search__results .search__item')).toMatch(/overflow-wrap: anywhere/)
+    })
+
     it('makes the input a full-width field at least 44 px tall, on desktop and phone', () => {
         const input = rule(css.replace(phone, ''), '.search__input')
         expect(input).toMatch(/width: 100%/)

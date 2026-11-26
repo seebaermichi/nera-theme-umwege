@@ -2,6 +2,12 @@
 
 All notable changes to `@nera-static/theme-umwege` are documented in this file. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and the theme follows [semantic versioning](https://semver.org/) over its contract (see the README).
 
+## [1.1.1] - 2026-11-26
+
+### Fixed
+
+-   Search results stay inside a narrow window: the results grid has a `minmax(0, 1fr)` track and its rows break long words (`overflow-wrap: anywhere`), so at 390 px a row with hits no longer runs 11–43 px past the right edge. Wide windows are unchanged.
+
 ## [1.1.0] - 2026-11-25
 
 ### Added
