@@ -3,7 +3,11 @@
 [![Test](https://github.com/seebaermichi/nera-theme-umwege/actions/workflows/test.yml/badge.svg)](https://github.com/seebaermichi/nera-theme-umwege/actions/workflows/test.yml)
 [![npm version](https://img.shields.io/npm/v/@nera-static/theme-umwege)](https://www.npmjs.com/package/@nera-static/theme-umwege)
 
+[![Live demo: Umwege](https://img.shields.io/badge/%E2%96%B6%20Live%20demo-Umwege-d97706?style=for-the-badge)](https://nera.js.org/themes/blog/umwege/)
+
 A blog theme for the [Nera](https://github.com/seebaermichi/nera) static site generator, made for travel writers: trips with facts, a route and places. It is presentation only — Pug views, one stylesheet, two self-hosted webfonts and a `config/theme.yaml` of design tokens.
+
+🔗 **Live demo:** [nera.js.org/themes/blog/umwege/](https://nera.js.org/themes/blog/umwege/)
 
 📖 **Documentation:** [nera.js.org](https://nera.js.org)
 
